@@ -29,4 +29,4 @@ go run client/main.go
 docker run -v /home/pk/Documents/DevOps/postgre/migrations:/migrations --network host migrate/migrate -path=/migrations/ -database postgres://ozon:ozon@localhost:5432/ozon?sslmode=disable up 2
 ```
 
-![graph](/Screenshot_83.png)
+![graph]([/Screenshot_83.png](https://github.com/pavlyk/Golang/blob/master/ozon/homework-2/Screenshot_83.png))
