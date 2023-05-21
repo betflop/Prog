@@ -1,0 +1,329 @@
+baseURL = "/"
+# [en, zh-cn, fr, ...] determines default content language
+defaultContentLanguage = "ru"
+# language code
+languageCode = "ru"
+title = "My DevOps Blog"
+
+# Change the default theme to be use when building the site with Hugo
+theme = "LoveIt"
+
+googleAnalytics = "G-BYF3YHJLDG"
+
+[minify]
+  disableHTML = true
+
+# Enable local search
+# offlineSearch = true
+
+[params]
+  # LoveIt theme version
+  version = "0.2.X"
+
+  # site default theme ["auto", "light", "dark"]
+  # 网站默认主题 ["auto", "light", "dark"]
+  defaultTheme = "dark"
+  # public git repo url only then enableGitInfo is true
+  # 公共 git 仓库路径，仅在 enableGitInfo 设为 true 时有效
+  gitRepo = ""
+  # which hash function used for SRI, when empty, no SRI is used
+  # ["sha256", "sha384", "sha512", "md5"]
+  # 哪种哈希函数用来 SRI, 为空时表示不使用 SRI
+  # ["sha256", "sha384", "sha512", "md5"]
+  fingerprint = ""
+  # date format
+  # 日期格式
+  dateFormat = "2023-01-19"
+  # website title for Open Graph and Twitter Cards
+  # 网站标题, 用于 Open Graph 和 Twitter Cards
+  title = "Pavel Kozlov"
+  # website description for RSS, SEO, Open Graph and Twitter Cards
+  # 网站描述, 用于 RSS, SEO, Open Graph 和 Twitter Cards
+  description = "This is my cool site"
+  # website images for Open Graph and Twitter Cards
+  # 网站图片, 用于 Open Graph 和 Twitter Cards
+  images = []
+
+  # Header config
+  # 页面头部导航栏配置
+  [params.header]
+    # desktop header mode ["fixed", "normal", "auto"]
+    # 桌面端导航栏模式 ["fixed", "normal", "auto"]
+    desktopMode = "fixed"
+    # mobile header mode ["fixed", "normal", "auto"]
+    # 移动端导航栏模式 ["fixed", "normal", "auto"]
+    mobileMode = "auto"
+    # Header title config
+    # 页面头部导航栏标题配置
+    [params.header.title]
+      # URL of the LOGO
+      # LOGO 的 URL
+      logo = ""
+      # title name
+      # 标题名称
+      name = "Pavel Kozlov"
+ 
+
+  # # Search config
+  # # 搜索配置
+  # [params.search]
+  #   enable = true
+  #   # type of search engine ["lunr", "algolia"]
+  #   # 搜索引擎的类型 ["lunr", "algolia"]
+  #   type = "lunr"
+  #   # max index length of the chunked content
+  #   # 文章内容最长索引长度
+  #   contentLength = 4000
+  #   # placeholder of the search bar
+  #   # 搜索框的占位提示语
+  #   placeholder = ""
+  #   # max number of results length
+  #   # 最大结果数目
+  #   maxResultLength = 10
+  #   # snippet length of the result
+  #   # 结果内容片段长度
+  #   snippetLength = 30
+  #   # HTML tag name of the highlight part in results
+  #   # 搜索结果中高亮部分的 HTML 标签
+  #   highlightTag = "em"
+  #   # whether to use the absolute URL based on the baseURL in search index
+  #   # 是否在搜索索引中使用基于 baseURL 的绝对路径
+  #   absoluteURL = false
+  #   # [params.search.algolia]
+  #   #   index = ""
+  #   #   appID = ""
+  #   #   searchKey = ""
+
+
+
+[menu]
+  [[menu.main]]
+    identifier = "posts"
+    # you can add extra information before the name (HTML format is supported), such as icons
+    pre = ""
+    # you can add extra information after the name (HTML format is supported), such as icons
+    post = ""
+    name = "Статьи"
+    url = "/posts/"
+    # title will be shown when you hover on this menu link
+    title = ""
+    weight = 1
+  [[menu.main]]
+    identifier = "tags"
+    pre = ""
+    post = ""
+    name = "Tags"
+    url = "/tags/"
+    title = ""
+    weight = 2
+  [[menu.main]]
+    identifier = "categories"
+    pre = ""
+    post = ""
+    name = "Categories"
+    url = "/categories/"
+    title = ""
+    weight = 3
+
+
+  [params.home]
+    # amount of RSS pages
+    # RSS 文章数目
+    rss = 10
+    # Home page profile
+    # 主页个人信息
+    [params.home.profile]
+      enable = true
+      # Gravatar Email for preferred avatar in home page
+      # Gravatar 邮箱，用于优先在主页显示的头像
+      gravatarEmail = ""
+      # URL of avatar shown in home page
+      # 主页显示头像的 URL
+      avatarURL = "/avatar.jpg"
+      # title shown in home page (HTML format is supported)
+      # 主页显示的网站标题 (支持 HTML 格式)
+      title = ""
+      # subtitle shown in home page (HTML format is supported)
+      # 主页显示的网站副标题 (允许 HTML 格式)
+      subtitle = "Pavel Kozlov"
+      # whether to use typeit animation for subtitle
+      # 是否为副标题显示打字机动画
+      typeit = true
+      # whether to show social links
+      # 是否显示社交账号
+      social = true
+      # disclaimer (HTML format is supported)
+      # 免责声明 (支持 HTML 格式)
+      disclaimer = ""
+
+# Markup related configuration in Hugo
+[markup]
+  # Syntax Highlighting (https://gohugo.io/content-management/syntax-highlighting)
+  [markup.highlight]
+    # false is a necessary configuration (https://github.com/dillonzq/LoveIt/issues/158)
+    noClasses = false
+
+# Multilingual
+[languages]
+  [languages.ru]
+    weight = 1
+    languageCode = "ru"
+    languageName = "Russian"
+    hasCJKLanguage = false
+    copyright = "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License."
+    [languages.ru.menu]
+      [[languages.ru.menu.main]]
+        weight = 1
+        identifier = "posts"
+        pre = ""
+        post = ""
+        name = "Статьи"
+        url = "/posts/"
+        title = ""
+      [[languages.ru.menu.main]]
+        weight = 2
+        identifier = "tags"
+        pre = ""
+        post = ""
+        name = "Тэги"
+        url = "/tags/"
+        title = ""
+      [[languages.ru.menu.main]]
+        weight = 3
+        identifier = "categories"
+        pre = ""
+        post = ""
+        name = "Категории"
+        url = "/categories/"
+        title = ""
+      # [[languages.ru.menu.main]]
+      #   weight = 4
+      #   identifier = "documentation"
+      #   pre = ""
+      #   post = ""
+      #   name = "Документы"
+      #   url = "/categories/documentation/"
+      #   title = ""
+      # [[languages.ru.menu.main]]
+      #   weight = 5
+      #   identifier = "about"
+      #   pre = ""
+      #   post = ""
+      #   name = "About"
+      #   url = "/about/"
+      #   title = ""
+      [[languages.ru.menu.main]]
+        weight = 6
+        identifier = "github"
+        pre = "<i class='fab fa-github fa-fw' aria-hidden='true'></i>"
+        post = ""
+        name = ""
+        url = "https://github.com/dillonzq/LoveIt"
+        title = "GitHub"
+        searchKey = "b42948e51daaa93df92381c8e2ac0f93"
+      [languages.ru.params.home]
+        rss = 10
+        [languages.ru.params.home.profile]
+          enable = true
+          gravatarEmail = ""
+          avatarURL = "/avatar.jpg"
+          title = ""
+          subtitle = "Pavel Kozlov"
+          typeit = true
+          social = true
+          disclaimer = ""
+      [languages.ru.params.social]
+        GitHub = "xxxx"
+        Twitter = "xxxx"
+        Instagram = "xxxx"
+        Facebook = "xxxx"
+        Telegram = "xxxx"
+        Youtubelegacy = "xxxx"
+        Phone = "555-555-555"
+        Email = "xxxx@xxxx.com"
+        RSS = true
+
+  # [languages.en]
+  #   weight = 2
+  #   languageCode = "en"
+  #   languageName = "English"
+  #   hasCJKLanguage = false
+  #   copyright = "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License."
+  #   [languages.en.menu]
+  #     [[languages.en.menu.main]]
+  #       weight = 1
+  #       identifier = "posts"
+  #       pre = ""
+  #       post = ""
+  #       name = "Posts"
+  #       url = "/posts/"
+  #       title = ""
+  #     [[languages.en.menu.main]]
+  #       weight = 2
+  #       identifier = "tags"
+  #       pre = ""
+  #       post = ""
+  #       name = "Tags"
+  #       url = "/tags/"
+  #       title = ""
+  #     [[languages.en.menu.main]]
+  #       weight = 3
+  #       identifier = "categories"
+  #       pre = ""
+  #       post = ""
+  #       name = "Categories"
+  #       url = "/categories/"
+  #       title = ""
+  #     [[languages.en.menu.main]]
+  #       weight = 4
+  #       identifier = "documentation"
+  #       pre = ""
+  #       post = ""
+  #       name = "Docs"
+  #       url = "/categories/documentation/"
+  #       title = ""
+  #     [[languages.en.menu.main]]
+  #       weight = 5
+  #       identifier = "about"
+  #       pre = ""
+  #       post = ""
+  #       name = "About"
+  #       url = "/about/"
+  #       title = ""
+  #     [[languages.en.menu.main]]
+  #       weight = 6
+  #       identifier = "github"
+  #       pre = "<i class='fab fa-github fa-fw' aria-hidden='true'></i>"
+  #       post = ""
+  #       name = ""
+  #       url = "https://github.com/dillonzq/LoveIt"
+  #       title = "GitHub"
+  #       searchKey = "b42948e51daaa93df92381c8e2ac0f93"
+  #     [languages.en.params.home]
+  #       rss = 10
+  #       [languages.en.params.home.profile]
+  #         enable = true
+  #         gravatarEmail = ""
+  #         avatarURL = "/avatar.jpg"
+  #         title = ""
+  #         subtitle = "Pavel Kozlov"
+  #         typeit = true
+  #         social = true
+  #         disclaimer = ""
+  #     [languages.en.params.social]
+  #       GitHub = "xxxx"
+  #       Twitter = "xxxx"
+  #       Instagram = "xxxx"
+  #       Facebook = "xxxx"
+  #       Telegram = "xxxx"
+  #       Youtubelegacy = "xxxx"
+  #       Phone = "555-555-555"
+  #       Email = "xxxx@xxxx.com"
+  #       RSS = true
+
+
+[privacy]
+  # privacy of the Google Analytics (replaced by params.analytics.google)
+  # Google Analytics 相关隐私 (被 params.analytics.google 替代)
+  [privacy.googleAnalytics]
+ 
