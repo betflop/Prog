@@ -7,3 +7,5 @@ app = FastAPI()
 def read_root():
     html_content = "<h2>Hello world!</h2>"
     return HTMLResponse(content=html_content)
+
+print(app)
