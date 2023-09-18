@@ -21,6 +21,9 @@ jobs:
           path: .cache
           restore-keys: |
             mkdocs-material-
+      - run: pip install mkdocs-glightbox 
+      - run: pip install mkdocs-with-pdf 
+      - run: pip install mkdocs-static-i18n 
       - run: pip install mkdocs-material 
       - name: "Deploy"
         working-directory: ./MkDocs
