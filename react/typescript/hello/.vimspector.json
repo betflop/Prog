@@ -1,0 +1,32 @@
+{
+    "configurations": {
+        "python": {
+            "adapter": "debugpy",
+            "filetypes": ["python"],
+            "configuration": {
+                "request": "launch",
+                "program": "${file}"
+            }
+        },
+        "js": {
+            "adapter": "js-debug",
+            "filetypes": ["javascript", "typescript"], // optional
+            "configuration": {
+                "request": "launch",
+                "stopOnEntry": true,
+                "console": "integratedTerminal",
+                "program": "${file}",
+                "cwd": "${workspaceRoot}",
+                "type": "pwa-node" // this is the default, but see below
+            }
+        },
+        "run": {
+            "adapter": "delve",
+            "filetypes": ["go"],
+            "configuration": {
+                "request": "launch",
+                "program": "${file}"
+            }
+        }
+    }
+}

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+    <url>
+        <loc>None01%20Linux/</loc>
+        <lastmod>2023-08-29</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ru" href="None01%20Linux/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Noneen/01%20Linux/"/>
+    </url>
+    <url>
+        <loc>None01%20Linux/rururu/</loc>
+        <lastmod>2023-08-29</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ru" href="None01%20Linux/rururu/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Noneen/01%20Linux/rururu/"/>
+    </url>
+    <url>
+        <loc>None02%20DevOps/rururu2/</loc>
+        <lastmod>2023-08-29</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ru" href="None02%20DevOps/rururu2/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Noneen/02%20DevOps/rururu2/"/>
+    </url>
+    <url>
+        <loc>None03%20IaC/rururu2/</loc>
+        <lastmod>2023-08-29</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ru" href="None03%20IaC/rururu2/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Noneen/03%20IaC/rururu2/"/>
+    </url>
+    <url>
+        <loc>Noneen/01%20Linux/</loc>
+        <lastmod>2023-08-29</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Noneen/01%20Linux/"/>
+        <xhtml:link rel="alternate" hreflang="ru" href="None01%20Linux/"/>
+    </url>
+    <url>
+        <loc>Noneen/01%20Linux/rururu/</loc>
+        <lastmod>2023-08-29</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Noneen/01%20Linux/rururu/"/>
+        <xhtml:link rel="alternate" hreflang="ru" href="None01%20Linux/rururu/"/>
+    </url>
+    <url>
+        <loc>Noneen/02%20DevOps/rururu2/</loc>
+        <lastmod>2023-08-29</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Noneen/02%20DevOps/rururu2/"/>
+        <xhtml:link rel="alternate" hreflang="ru" href="None02%20DevOps/rururu2/"/>
+    </url>
+    <url>
+        <loc>Noneen/03%20IaC/rururu2/</loc>
+        <lastmod>2023-08-29</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Noneen/03%20IaC/rururu2/"/>
+        <xhtml:link rel="alternate" hreflang="ru" href="None03%20IaC/rururu2/"/>
+    </url>
+</urlset>
