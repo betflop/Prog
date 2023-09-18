@@ -45,7 +45,7 @@ extra:
       link: https://dev.to/cosckoya
 
 plugins:
-    - with-pdf:
+    # - with-pdf:
     - glightbox:
     - search:
     - i18n:
