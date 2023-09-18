@@ -10,7 +10,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      working-directory: ./MkDocs
+        working-directory: ./MkDocs
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
         with:
