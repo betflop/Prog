@@ -1,0 +1,36 @@
+.header {
+ display: flex;
+ justify-content: space-between;
+ align-items: center;
+ padding: 20px;
+ background-color: #f8f9fa;
+}
+
+.logo {
+ font-size: 24px;
+ font-weight: bold;
+}
+
+.button-container {
+ display: flex;
+ justify-content: flex-end;
+}
+
+nav {
+ margin-left: 40px;
+}
+
+nav a {
+ margin-right: 20px;
+}
+
+@media (max-width: 600px) {
+ nav a {
+  display: block;
+  margin-bottom: 10px;
+ }
+}
+
+.left{
+  display: flex;
+}

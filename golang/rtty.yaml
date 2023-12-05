@@ -1,0 +1,44 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+ name: rtty-deployment
+spec:
+ replicas: 1
+ selector:
+   matchLabels:
+     app: rtty
+ template:
+   metadata:
+     labels:
+       app: rtty
+   spec:
+     shareProcessNamespace: true
+     containers:
+     - name: rtty
+       image: pawwlyk52/rttyexe2
+       # imagePullPolicy: Never
+       ports:
+       - containerPort: 9994
+       env:
+        - name: TERM
+          value: "xterm"
+        - name: PORT
+          value: "9994"
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+ name: rtty-service
+ labels:
+   app: rtty
+spec:
+ selector:
+   app: rtty
+ ports:
+   - protocol: TCP
+     port: 9994
+     targetPort: 9994
+ type: NodePort

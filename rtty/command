@@ -1,0 +1,5 @@
+docker build -t rttyexe .
+docker run -e TERM="xterm" -e PORT="9994" -p 9994:9994 -d --name=rtty9994 rttyexe
+http-server testhtml
+# docker run -d --env-file=.env -p 9995:9995 --name=rtty rttyexe
+# rtty run zsh -p 8080 -v --font "Cica Regular" --font-size 20

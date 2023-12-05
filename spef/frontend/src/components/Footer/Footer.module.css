@@ -1,0 +1,21 @@
+
+.footer {
+ display: flex;
+ justify-content: center;
+ align-items: center;
+ padding: 20px;
+ background-color: #f8f9fa;
+}
+
+.footer-content {
+ display: flex;
+ justify-content: center;
+ width: 100%;
+ max-width: 1200px;
+}
+
+.contact {
+ display: flex;
+ justify-content: space-between;
+ width: 200px;
+}

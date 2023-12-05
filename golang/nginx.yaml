@@ -1,0 +1,98 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+ name: nginx-deployment
+spec:
+ replicas: 1
+ selector:
+   matchLabels:
+     app: nginx
+ template:
+   metadata:
+     labels:
+       app: nginx
+   spec:
+     containers:
+     - name: nginx
+       image: nginx:latest
+       ports:
+       - containerPort: 80
+       volumeMounts:
+       - name: html
+         mountPath: /usr/share/nginx/html
+       # - name: nginx-config
+         # mountPath: /etc/nginx/nginx.conf
+         # subPath: nginx.conf  
+     volumes:
+     - name: html
+       hostPath:
+         path: /Users/pavelkozlov/Documents/Golang_Python/golang/testhtml
+         type: Directory
+     # - name: nginx-config
+     #   configMap:
+     #     name: nginx-config # place ConfigMap `nginx-conf` on /etc/nginx
+     #     items:
+     #       - key: nginx.conf
+     #         path: nginx.conf
+
+--- 
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+ name: nginx-config
+data:
+ nginx.conf: |
+  user nginx;
+
+  worker_processes    auto;
+
+  events { worker_connections 1024; }
+
+  http {
+      map $http_upgrade $connection_upgrade {
+          default upgrade;
+          '' close;
+      }
+
+      upstream websocket1 {
+          server 172.17.0.5:9995;
+      }
+
+      upstream websocket2 {
+          server 172.17.0.4:9994;
+      }
+
+      #####
+
+      server {
+          # Hide nginx version information.
+          server_tokens off;
+          proxy_connect_timeout      600;
+          proxy_send_timeout         600;
+          proxy_read_timeout         600;
+          listen  80;
+          root    /usr/share/nginx/html;
+          include /etc/nginx/mime.types;
+
+          location / {
+              try_files $uri $uri/ /index.html;
+          }
+
+          location /ws1 {
+              proxy_pass http://websocket1/ws;
+              proxy_http_version 1.1;
+              proxy_set_header Upgrade $http_upgrade;
+              proxy_set_header Connection $connection_upgrade;
+              proxy_set_header Host $host;
+          }
+
+          location /ws2 {
+              proxy_pass http://websocket2/ws;
+              proxy_http_version 1.1;
+              proxy_set_header Upgrade $http_upgrade;
+              proxy_set_header Connection $connection_upgrade;
+              proxy_set_header Host $host;
+          }
+      }
+  }
