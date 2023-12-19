@@ -17,20 +17,14 @@ spec:
      containers:
      - name: nginx
        image: pawwlyk52/my-nginx-image
-       # imagePullPolicy: Never
        ports:
        - containerPort: 80
        volumeMounts:
        - name: nginx-config
          mountPath: /etc/nginx/nginx2.conf
-         # subPath: nginx2.conf  
      - name: sidecar
        image: busybox
        command: ["sh", "-c", "while true; do echo 'Sidecar container is running'; sleep 30; done"]
-       # volumeMounts:
-       # - name: nginx-config
-       #   mountPath: /nginx.conf
-       #   subPath: nginx.conf
      volumes:
      - name: nginx-config
        configMap:
@@ -39,8 +33,21 @@ spec:
            - key: nginx.conf
              path: nginx.conf
 
---- 
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sidecarlb
+  annotations:
+spec:
+  ports:
+  - port: 80
+    targetPort: 80
+  selector:
+    app: nginx-sidecar
+  type: LoadBalancer
 
+--- 
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -100,5 +107,3 @@ data:
           }
       }
   }
-
-

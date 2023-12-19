@@ -17,7 +17,7 @@ func main() {
 		panic(err)
 	}
 
-	containerName := "nginx"
+	containerName := "nginx2"
 
 	filters := filters.NewArgs()
 	filters.Add("name", containerName)

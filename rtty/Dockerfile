@@ -22,10 +22,6 @@ COPY ./getpods /bin/getpods
 COPY ./getpods2 /bin/getpods2
 COPY ./config /bin/config
 
-COPY ./ca.crt /bin/ca.crt
-COPY ./client.crt /bin/client.crt
-COPY ./client.key /bin/client.key
-
 # Default powerline10k theme, no plugins installed
 # RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/v1.1.5/zsh-in-docker.sh)"
 # RUN   sed -i "s|powerlevel10k/powerlevel10k|robbyrussell|" ~/.zshrc
