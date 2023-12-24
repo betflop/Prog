@@ -46,8 +46,10 @@ console.log(topic);
  const [image, setImage] = useState('');
 
   const handleClose = () => setShow(false);
-    const handleShow = (event: any) => {
+    const handleShow = (event: any, key: any) => {
         console.log('clicked');
+        console.log(event);
+        console.log(key);
         console.log(event.target);
         setQuestion(event.target.innerText);
         setShow(true);
