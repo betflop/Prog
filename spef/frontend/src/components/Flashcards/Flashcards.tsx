@@ -8,25 +8,27 @@ import Card from '../Card/Card';
 
 function Flashcards( {topic, searchInput} : any ) {
 
- const [flashcards, setFlashcards] = useState([{"id": 999 , "question": "Question ---", "answer": "Answer ---"}]);
+const [flashcards, setFlashcards] = useState([{"id": 999 , "question": "Question ---", "answer": "Answer ---"}]);
 
 console.log("render Flashcards");
 console.log(topic);
 
  useEffect(() => {
    const requestOptions = {
-     method: 'POST',
+     method: 'GET',
      headers: { 'Content-Type': 'application/json' },
-     body: JSON.stringify({ topic: 'linux1react', description: 'test123' })
+     /* body: JSON.stringify({ topic: 'linux1react', question: 'test123' }) */
    };
 
-   fetch('/api/cards', requestOptions)
+   console.log("fetching");
+   fetch('/api/questions', requestOptions)
      .then(response => response.json())
-         .then(data => {console.log(data);
-             let filteredData = (topic === "all" ? data : data.filter(item => item.topic === topic));
+         .then(data => {
+             console.log("data");
+             console.log(data);
+             let filteredData = (topic.toLowerCase() === "all" ? data : data.filter(item => item.topic.toLowerCase() === topic.toLowerCase()));
              if (searchInput != "") {
-                console.log("searching " + searchInput);
-                filteredData = data.filter(item => item.answer.toLowerCase().includes(searchInput.toLowerCase()) || item.question.toLowerCase().includes(searchInput.toLowerCase()));
+                filteredData = data.filter(item => item.question.toLowerCase().includes(searchInput.toLowerCase()));
              }
           setFlashcards(filteredData);
           console.log(topic === "all");

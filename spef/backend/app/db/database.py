@@ -34,3 +34,11 @@ urlConnect = URL.create(
 engine = create_engine(urlConnect)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
