@@ -8,8 +8,8 @@ from alembic import context
 
 from app.db.database import ALEMBIC_DATABASE_URL
 
-from app.models.model import Base
-from app.models.model import PracticesModel, QuestionModel
+from app.db.model import Base
+from app.db.model import PracticesModel, QuestionModel
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

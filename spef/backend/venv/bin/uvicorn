@@ -1,4 +1,4 @@
-#!/Users/pavelkozlov/Documents/Golang_Python/spef42/backend/venv/bin/python3.11
+#!/Users/pavelkozlov/Documents/Golang_Python/spef/backend/venv/bin/python3.11
 # -*- coding: utf-8 -*-
 import re
 import sys

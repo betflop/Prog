@@ -1,2 +1,5 @@
-
 uvicorn==0.24.0
+SQLAlchemy==1.4.42
+telegram==0.0.1
+python_telegram_bot==20.0a4
+psycopg2

@@ -2,8 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.db.database import get_db
-from app.db.model_view import ModelApiView
-from app.models.model import QuestionModel
+from app.api.model_view import ModelApiView
+from app.db.model import QuestionModel
 
 
 class QuestionApiView(ModelApiView):
@@ -13,8 +13,11 @@ class QuestionApiView(ModelApiView):
         return [
             {
                 "id": item.id,
-                "topic": item.topic,
+                "tag1": item.tag1,
                 "question": item.question,
+                "answer": item.answer,
+                "text": item.text,
+                # "img": item.img
             }
             for item in db.query(self.model).all()
         ]
