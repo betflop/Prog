@@ -1,0 +1,4 @@
+python_telegram_bot==20.0a4
+SQLAlchemy==1.4.42
+telegram==0.0.1
+psycopg2

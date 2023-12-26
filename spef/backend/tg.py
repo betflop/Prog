@@ -21,6 +21,7 @@ from bs4 import BeautifulSoup
 
 config = Config(".env")
 
+BOT_TOKEN = config.get("BOT_TOKEN")
 API_HOST = config.get("API_HOST")
 API_PORT = config.get("API_PORT")
 API_ENDPOINT = "/api/questions"
@@ -390,8 +391,7 @@ async def request_message(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
 def main() -> None:
     """Run the bot."""
     # Create the Application and pass it your bot's token.
-    application = Application.builder().token(
-        "5303765484:AAF6fT42ZRHhV20GvlIJlrr48rWo-30RzT4").build()
+    application = Application.builder().token(BOT_TOKEN).build()
 
     # application.add_handler(CommandHandler("start", start))
     # application.add_handler(CommandHandler("create", create))

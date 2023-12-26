@@ -1,0 +1,64 @@
+version: "3.3"
+###
+services:
+  app:
+    build: ./app/
+    volumes:
+      - ./app/img/:/code/img/
+    # depends_on:
+       # db:
+         # condition: service_healthy
+    links:
+      - "db:pgsql-server"
+    restart: always
+  app_cron:
+    build: ./app_cron/
+    # depends_on:
+       # db:
+         # condition: service_healthy
+    links:
+      - "db:pgsql-server"
+        #    restart: always
+  db:
+    image: postgres:12.0-alpine
+    # build: ./database/
+    volumes:
+      - /var/lib/postgresql/data/
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=tgbot
+      - POSTGRES_PASSWORD=tgbot
+      - POSTGRES_DB=telegram
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tgbot -d telegram"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: always
+
+#   pgadmin:
+#     image: dpage/pgadmin4:4.18
+#     restart: always
+#     environment:
+#       PGADMIN_DEFAULT_EMAIL: admin@telegram.com
+#       PGADMIN_DEFAULT_PASSWORD: tgbot
+#       PGADMIN_LISTEN_PORT: 8081
+#     ports:
+#       - "8081:8081"
+#     volumes:
+#       - /var/lib/pgadmin
+#     links:
+#       - "db:pgsql-server"
+
+#   migrate:
+#      image: migrate/migrate
+#      volumes:
+#         - ./migrations:/migrations
+#      command: -source=file://migrations -database postgres://ozon:ozon@pgsql-server:5432/ozon?sslmode=disable up 4
+#      depends_on:
+#        db:
+#          condition: service_healthy
+#      links: 
+#         - "db:pgsql-server"  
