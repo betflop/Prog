@@ -32,6 +32,21 @@ class ModelApiView:
         return {"message": "success"}
 
     def remove(self, item_id: int, db: Session = Depends(get_db)):
+        print('delete')
+        print(item_id)
+
+        # practices = db.query(PracticesModel).filter(
+        #     PracticesModel.question_id == item_id).all()
+
+        # for practice in practices:
+        #     db.delete(practice)
+
+        # db.commit()
+
+        # # Теперь вы можете безопасно удалить запись из таблицы questions
+        # db.query(Questions).filter(Questions.id == item_id).delete()
+        # db.commit()
+
         query = db.query(self.model).filter(self.model.id == item_id)
         query.delete()
         db.commit()

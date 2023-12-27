@@ -13,3 +13,9 @@
  margin: 10px;
  text-align: center;
 }
+
+.delete-button {
+ position: absolute;
+ top: 0;
+ right: 0;
+}

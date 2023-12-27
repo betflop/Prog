@@ -17,7 +17,6 @@ app = FastAPI(
     ],
 )
 
-
 app.include_router(question_items_router)
 
 if __name__ == "__main__":
