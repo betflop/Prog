@@ -10,7 +10,7 @@ app = FastAPI(
     docs_url="/api/docs",
     openapi_url="/api/openapi.json",
     title="Spef",
-    version="1.0.0.1",
+    version="1.0.0.7",
     description="Spef API",
     openapi_tags=[
         *question_tags

@@ -1,2 +1,0 @@
-docker exec -it python_db_1 psql -U tgbot -W telegram
-psql -h 79.137.195.140 -p 5432 -U tgbot -W telegram

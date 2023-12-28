@@ -1,2 +1,0 @@
-
-pg_dump postgresql://tgbot:tgbot@127.0.0.1:5432/telegram -j 1 -Fd -f ./tmpdump

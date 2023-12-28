@@ -1,1 +1,0 @@
-pg_restore -d "postgresql://tgbot:tgbot@127.0.0.1:5432/telegram" -Fd --format=d ./tmpdump
