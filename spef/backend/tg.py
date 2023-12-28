@@ -2,6 +2,7 @@
 # pylint: disable=unused-argument, wrong-import-position
 # This program is dedicated to the public domain under the CC0 license.
 
+import base64
 import os
 import uuid
 import re
@@ -17,13 +18,14 @@ import json
 from telegram import __version__ as TG_VER
 from starlette.config import Config
 from bs4 import BeautifulSoup
+from telegram import InputFile
 
 config = Config(".env")
 
 BOT_TOKEN = config.get("BOT_TOKEN")
 API_HOST = config.get("API_HOST")
 API_PORT = config.get("API_PORT")
-add_question_url = f"http://{API_HOST}:{API_PORT}/api/questions"
+question_url = f"http://{API_HOST}:{API_PORT}/api/questions"
 get_stats_url = f"http://{API_HOST}:{API_PORT}/api/questions/stats"
 tags_url = f"http://{API_HOST}:{API_PORT}/api/questions/tags"
 headers = {'Content-type': 'application/json'}
@@ -107,7 +109,7 @@ async def stats(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     )
     # fstats = find_stat(update.message.from_user.id)
 
-    await update.message.reply_text("📊 Статистика по темам:")
+    await update.message.reply_text("📊 Статистика:")
     strstats = ""
     for k, v in fstats.json().items():
         strstats += "{}: {}\n".format(k, v)
@@ -120,26 +122,12 @@ async def create(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text("Для создания карточки пришлите текст или фото и укажите тему в виде хештега\nПример:\nНазовите уровни OSI\n||Физический||\n||Канальный||\n#Network")
 
 
-# def find_question(user_id, tag):
-#     # Retrieve the last number inserted inside the 'numbers'
-#     query = """
-#     SELECT q.id, q.question, coalesce(p.level, 1) as level, p.repeat_date, q.answer_img
-#     FROM questions as q LEFT JOIN practice as p
-#     ON q.id = p.question_id and q.user_id = p.user_id
-#     WHERE q.tag1 = %s
-#     and q.user_id = %s
-#     and (p.repeat_date <= %s or p.repeat_date is null)
-#     ORDER BY
-#     p.repeat_date nulls FIRST
-#     LIMIT 1
-#     """
+def find_question(user_id, tag):
 
-#     result = []
-#     result_set = db.execute(
-#         query, (tag, user_id, datetime.now().strftime('%Y-%m-%d %H:%M:%S'), ))
-#     for (r) in result_set:
-#         result.append([r[0], r[1], r[2], r[3], r[4]])
-#     return result
+    response = requests.get(
+        question_url+"?next=true&tag={}&user_id={}".format(tag, user_id), headers=headers)
+
+    return response.json()
 
 
 # def find_img(user_id, q_id):
@@ -219,99 +207,109 @@ async def create(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 #         q_id, user_id, q_level, "'"+practice_date+"'", "'"+repeat_date+"'", q_level, "'"+practice_date+"'", "'"+repeat_date+"'"))
 
 
-# async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-#     """Parses the CallbackQuery and updates the message text."""
-#     query = update.callback_query
+async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Parses the CallbackQuery and updates the message text."""
+    query = update.callback_query
 
-#     # CallbackQueries need to be answered, even if no notification to the user is needed
-#     # Some clients may have trouble otherwise. See https://core.telegram.org/bots/api#callbackquery
-#     await query.answer()
+    # CallbackQueries need to be answered, even if no notification to the user is needed
+    # Some clients may have trouble otherwise. See https://core.telegram.org/bots/api#callbackquery
+    await query.answer()
 
-#     command = query.data.split("_")[0]
-#     if command == "tag":
-#         answer = "Выбранная тема <b>{}</b>".format(query.data.split("_")[1])
-#         question = find_question(query.from_user.id, query.data.split("_")[1])
-#         if len(question) == 0:
-#             await query.message.reply_text("☕ Вопросы закончились...\nМожно попить кофе!")
-#             return
-#         keyboard = [
-#             [InlineKeyboardButton("Flip", callback_data="Flip_{}_{}_{}_{}".format(
-#                 query.data.split("_")[1], question[0][0], question[0][2], len(question[0][4])))],
-#         ]
-#         reply_markup = InlineKeyboardMarkup(keyboard)
-#         print('___________________________Выбран вопрос id:{}_________________________'.format(
-#             question[0][0]))
-#         await query.edit_message_text(text=answer, parse_mode="HTML")
-#         await query.message.reply_text("{}".format(stripstring(question[0][1])), reply_markup=reply_markup, parse_mode="HTML")
-#     elif command == "Flip":
-#         q_tag = query.data.split("_")[1]
-#         q_id = query.data.split("_")[2]
-#         q_level = query.data.split("_")[3]
-#         q_img = query.data.split("_")[4]
-#         if q_img != "0":
-#             q_img = find_img(query.from_user.id, q_id)[0][1]
+    command = query.data.split("_")[0]
+    if command == "tag":
+        answer = "Выбранная тема <b>{}</b>".format(query.data.split("_")[1])
+        question = find_question(query.from_user.id, query.data.split("_")[1])
+        if len(question) == 0:
+            await query.message.reply_text("☕ Вопросы закончились...\nМожно попить кофе!")
+            return
+        keyboard = [
+            [InlineKeyboardButton("Flip", callback_data="Flip_{}_{}_{}_{}".format(
+                query.data.split("_")[1], question["id"], question["level"]))],
+        ]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        print('___________________________Выбран вопрос id:{}_________________________'.format(
+            question["id"]))
+        await query.edit_message_text(text=answer, parse_mode="HTML")
+        await query.message.reply_text("{}".format(stripstring(question["question"])), reply_markup=reply_markup, parse_mode="HTML")
+    elif command == "Flip":
+        q_tag = query.data.split("_")[1]
+        q_id = query.data.split("_")[2]
+        q_level = query.data.split("_")[3]
+        q_img = requests.get(
+            question_url+"/{}".format(q_id), headers=headers
+        ).json()["img"]
+        # if q_img != "0":
+        # q_img = find_img(query.from_user.id, q_id)[0][1]
 
-#         keyboard = [
-#             [InlineKeyboardButton("❌Del", callback_data="answer_{}_{}_{}_d".format(q_tag, q_id, q_level)),
-#              InlineKeyboardButton(
-#                  "😔Hard", callback_data="answer_{}_{}_{}_1".format(q_tag, q_id, q_level)),
-#              InlineKeyboardButton(
-#                  "🤷‍♂️Good", callback_data="answer_{}_{}_{}_2".format(q_tag, q_id, q_level)),
-#              InlineKeyboardButton("😄Easy", callback_data="answer_{}_{}_{}_3".format(q_tag, q_id, q_level))],
-#         ]
-#         reply_markup = InlineKeyboardMarkup(keyboard)
+        keyboard = [
+            [
+                # InlineKeyboardButton("❌Del", callback_data="answer_{}_{}_{}_d".format(q_tag, q_id, q_level)),
+                InlineKeyboardButton(
+                    "😔Hard", callback_data="answer_{}_{}_{}_1".format(q_tag, q_id, q_level)),
+                InlineKeyboardButton(
+                    "🤷‍♂️Good", callback_data="answer_{}_{}_{}_2".format(q_tag, q_id, q_level)),
+                InlineKeyboardButton("😄Easy", callback_data="answer_{}_{}_{}_3".format(q_tag, q_id, q_level))],
+        ]
+        reply_markup = InlineKeyboardMarkup(keyboard)
 
-#         text = query.message.text_html.replace(
-#             '<span class="tg-spoiler">', '').replace('</span>', '')
-#         striptext = query.message.text
-#         for i in re.findall('<.+?\n?.+?>', striptext):
-#             newi = i.replace("<", "").replace(">", "")
-#             text = text.replace(i, "&lt;{}&gt;".format(newi))
+        text = query.message.text_html.replace(
+            '<span class="tg-spoiler">', '').replace('</span>', '')
+        striptext = query.message.text
+        for i in re.findall('<.+?\n?.+?>', striptext):
+            newi = i.replace("<", "").replace(">", "")
+            text = text.replace(i, "&lt;{}&gt;".format(newi))
 
-#         if q_img == "0" or len(q_img) == 0:
+        if q_img is None or len(q_img) == 0:
+            await query.edit_message_text(text="{}".format(text), reply_markup=reply_markup, parse_mode="HTML")
+        else:
+            base64_img_bytes = base64_img.encode('utf-8')
+            decoded_image_data = base64.decodebytes(base64_img_bytes)
+            await query.edit_message_text(text=text, parse_mode="HTML")
+            await query.message.reply_photo(photo=InputFile(BytesIO(decoded_image_data)), caption="-------------------", reply_markup=reply_markup, parse_mode="HTML")
 
-#             await query.edit_message_text(text="{}".format(text), reply_markup=reply_markup, parse_mode="HTML")
-#         else:
-#             await query.edit_message_text(text=text, parse_mode="HTML")
-#             await query.message.reply_photo(photo=open(q_img, 'rb'), caption="-------------------", reply_markup=reply_markup, parse_mode="HTML")
+    elif command == "answer":
+        q_level = 1
+        delete = False
 
-#     elif command == "answer":
-#         q_level = 1
-#         delete = False
+        if query.data.split("_")[4] == "1":
+            q_level = 1
+            await query.message.reply_text("Без комментариев 🤬 ")
+        elif query.data.split("_")[4] == "2":
+            q_level = max(1, int(query.data.split("_")[3]) - 1)
+            await query.message.reply_text("Так держать 👍 ")
+        elif query.data.split("_")[4] == "3":
+            q_level = min(7, int(query.data.split("_")[3]) + 1)
+            await query.message.reply_text("Красава ❤️‍🔥 ")
+        # elif query.data.split("_")[4] == "d":
+        #     delete=True
+        #     delete_query(query.from_user.id, query.data.split("_")[2])
+        #     await query.message.edit_reply_markup()
 
-#         if query.data.split("_")[4] == "1":
-#             q_level = 1
-#             await query.message.reply_text("Без комментариев 🤬 ")
-#         elif query.data.split("_")[4] == "2":
-#             q_level = max(1, int(query.data.split("_")[3]) - 1)
-#             await query.message.reply_text("Так держать 👍 ")
-#         elif query.data.split("_")[4] == "3":
-#             q_level = min(7, int(query.data.split("_")[3]) + 1)
-#             await query.message.reply_text("Красава ❤️‍🔥 ")
-#         elif query.data.split("_")[4] == "d":
-#             delete = True
-#             delete_query(query.from_user.id, query.data.split("_")[2])
-#             await query.message.edit_reply_markup()
+        if not delete:
+            response = requests.post(
+                question_url+"/{}/practice".format(query.data.split("_")[2]), headers=headers, data={
+                    "user_id": query.from_user.id,
+                    "status": query.data.split("_")[4]
+                }
+            )
+            # update_practice(query.from_user.id,
+            #                 query.data.split("_")[2], q_level)
+            if query.message.caption == None:
+                await query.edit_message_text(text="{}".format(query.message.text_html.replace("||", "")), parse_mode="HTML")
+            else:
+                await query.message.edit_reply_markup()
 
-#         if not delete:
-#             update_practice(query.from_user.id,
-#                             query.data.split("_")[2], q_level)
-#             if query.message.caption == None:
-#                 await query.edit_message_text(text="{}".format(query.message.text_html.replace("||", "")), parse_mode="HTML")
-#             else:
-#                 await query.message.edit_reply_markup()
+        question = find_question(query.from_user.id, query.data.split("_")[1])
+        if question == None or len(question) == 0:
+            await query.message.reply_text("☕ Вопросы закончились...\nМожно попить кофе!")
+            return
 
-#         question = find_question(query.from_user.id, query.data.split("_")[1])
-#         if len(question) == 0:
-#             await query.message.reply_text("☕ Вопросы закончились...\nМожно попить кофе!")
-#             return
-
-#         keyboard = [
-#             [InlineKeyboardButton("Flip", callback_data="Flip_{}_{}_{}_{}".format(
-#                 query.data.split("_")[1], question[0][0], question[0][2], len(question[0][4])))],
-#         ]
-#         reply_markup = InlineKeyboardMarkup(keyboard)
-#         await query.message.reply_text("{}".format(stripstring(question[0][1])), reply_markup=reply_markup, parse_mode="HTML")
+        keyboard = [
+            [InlineKeyboardButton("Flip", callback_data="Flip_{}_{}_{}_{}".format(
+                query.data.split("_")[1], question[0][0], question[0][2], len(question[0][4])))],
+        ]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        await query.message.reply_text("{}".format(stripstring(question[0][1])), reply_markup=reply_markup, parse_mode="HTML")
 
 
 async def request_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -385,7 +383,7 @@ async def request_message(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
             data["img"] = img_base64
 
         response = requests.post(
-            add_question_url, data=json.dumps(data), headers=headers)
+            question_url, data=json.dumps(data), headers=headers)
     else:
         await update.message.reply_text("Карточка не содержит вопрос c тегом <b>")
         return

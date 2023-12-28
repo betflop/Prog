@@ -5,21 +5,27 @@ from datetime import datetime, timedelta
 
 from app.db.database import get_db
 from app.api.model_view import ModelApiView
-from app.db.model import QuestionModel, PracticesModel
+from app.db.model import QuestionModel, PracticesModel, HistoryModel
 
 
 class QuestionApiView(ModelApiView):
     model = QuestionModel
 
-    def get_list(self, db: Session = Depends(get_db)):
+    def get_list(self, next: bool = False, tag: str = None, user_id: int = None, db: Session = Depends(get_db)):
         questions = []
         yesterday = datetime.now() - timedelta(days=1)
         repeat_date = func.coalesce(PracticesModel.repeat_date, yesterday)
         result = db.query(self.model.id, self.model.tag1, self.model.tag2, self.model.tag3, self.model.question, self.model.answer, self.model.text, self.model.img, repeat_date.label('repeat_date'))\
             .join(PracticesModel, PracticesModel.question_id == QuestionModel.id, isouter=True)\
+            .order_by('repeat_date')\
             .all()
 
         for item in result:
+            if tag is not None:
+                if item.tag1 != tag and item.tag2 != tag and item.tag3 != tag:
+                    continue
+            if next and item.repeat_date > datetime.now():
+                continue
             print(item)
             questions.append({
                 "id": item.id,
@@ -32,6 +38,8 @@ class QuestionApiView(ModelApiView):
                 "img": item.img,
                 "repeat_date": item.repeat_date
             })
+            if next and len(questions) == 1:
+                break
 
         return questions
 
@@ -69,6 +77,9 @@ class QuestionApiView(ModelApiView):
         return {
             "id": item.id,
             "question": item.question,
+            "answer": item.answer,
+            "text": item.text,
+            "img": item.img,
             "created_at": item.created_at
         }
 
@@ -109,6 +120,11 @@ class QuestionApiView(ModelApiView):
                 question_id=item_id, user_id=data["user_id"], level=1, repeat_date=new_date)
             db.add(record)
 
+        history_record = HistoryModel(
+            question_id=item_id, user_id=data["user_id"])
+
+        db.add(history_record)
+
         # Сохранение изменений
         db.commit()
         return {"message": "success", "newDate": new_date}
@@ -120,6 +136,12 @@ class QuestionApiView(ModelApiView):
 
         for practice in practices:
             db.delete(practice)
+
+        historys = db.query(HistoryModel).filter(
+            HistoryModel.question_id == item_id).all()
+
+        for history in historys:
+            db.delete(history)
 
         db.commit()
 
@@ -135,6 +157,8 @@ question_api_view = QuestionApiView()
 question_items_router = APIRouter(
     prefix="/api/questions",
     tags=["questions"],
+
+
 )
 
 

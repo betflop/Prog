@@ -41,5 +41,5 @@ class HistoryModel(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer)
-    last_request = Column(String)
-    last_date = Column(Date)
+    question_id = Column(Integer, ForeignKey("questions.id"))
+    date = Column(Date, default=date.today())
