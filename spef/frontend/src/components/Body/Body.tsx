@@ -32,7 +32,6 @@ function Body() {
             .catch((error) => console.error("Error:", error));
     }, []);
 
-    console.log(currentTags);
     return (
         <>
             <Row className="col-12">

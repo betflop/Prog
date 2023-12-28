@@ -2,7 +2,6 @@
 # pylint: disable=unused-argument, wrong-import-position
 # This program is dedicated to the public domain under the CC0 license.
 
-
 import os
 import uuid
 import re
@@ -24,8 +23,9 @@ config = Config(".env")
 BOT_TOKEN = config.get("BOT_TOKEN")
 API_HOST = config.get("API_HOST")
 API_PORT = config.get("API_PORT")
-API_ENDPOINT = "/api/questions"
-add_question_url = f"http://{API_HOST}:{API_PORT}{API_ENDPOINT}"
+add_question_url = f"http://{API_HOST}:{API_PORT}/api/questions"
+get_stats_url = f"http://{API_HOST}:{API_PORT}/api/questions/stats"
+tags_url = f"http://{API_HOST}:{API_PORT}/api/questions/tags"
 headers = {'Content-type': 'application/json'}
 
 
@@ -75,37 +75,49 @@ if __version_info__ < (20, 0, 0, "alpha", 1):
 #     return tags
 
 
-# async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-#     tags = find_stat(update.message.from_user.id)
-#     keyboard = []
-#     currentline = []
-#     for tag in tags:
-#         currentline.append(InlineKeyboardButton("{} {}".format(
-#             tag[0], tag[8]), callback_data="tag_{}".format(tag[0])))
-#         if len(currentline) % 2 == 0:
-#             keyboard.append(currentline)
-#             currentline = []
-#     keyboard.append(currentline)
-#     reply_markup = InlineKeyboardMarkup(keyboard)
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Send a message when the command /start is issued."""
 
-#     await update.message.reply_text("📚 Выберите тему:", reply_markup=reply_markup, parse_mode="HTML")
+    response = requests.get(
+        tags_url+"?only_ready=true", headers=headers)
 
+    # update.message.from_user.id
+    keyboard = []
+    currentline = []
+    print(response.json())
+    for tag, count in response.json().items():
+        if tag == "ready":
+            continue
+        currentline.append(InlineKeyboardButton("{} {}".format(
+            tag, count), callback_data="tag_{}".format(tag[0])))
+        if len(currentline) % 2 == 0:
+            keyboard.append(currentline)
+            currentline = []
+    keyboard.append(currentline)
+    reply_markup = InlineKeyboardMarkup(keyboard)
 
-# async def stats(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-#     fstats = find_stat(update.message.from_user.id)
-
-#     await update.message.reply_text("📊 Статистика по темам:")
-#     strstats = ""
-#     for i in fstats:
-#         strstats = ""
-#         strstats += "{:<15}\nA:{}, B:{}, C:{}, D:{}, E:{}, F:{}, G:{}\nReady:{}\n".format(
-#             i[0], i[7], i[6], i[5], i[4], i[3], i[2], i[1], i[8])
-#         await update.message.reply_text(strstats)
+    await update.message.reply_text("📚 Выберите тему:", reply_markup=reply_markup, parse_mode="HTML")
 
 
-# async def create(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-#     """Sends a message with three inline buttons attached."""
-#     await update.message.reply_text("Для создания карточки пришлите текст или фото и укажите тему в виде хештега\nПример:\nНазовите уровни OSI\n||Физический||\n||Канальный||\n#Network")
+async def stats(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Sends a message with three inline buttons attached."""
+
+    fstats = requests.get(
+        get_stats_url, headers=headers
+    )
+    # fstats = find_stat(update.message.from_user.id)
+
+    await update.message.reply_text("📊 Статистика по темам:")
+    strstats = ""
+    for k, v in fstats.json().items():
+        strstats += "{}: {}\n".format(k, v)
+
+    await update.message.reply_text(strstats)
+
+
+async def create(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Sends a message with three inline buttons attached."""
+    await update.message.reply_text("Для создания карточки пришлите текст или фото и укажите тему в виде хештега\nПример:\nНазовите уровни OSI\n||Физический||\n||Канальный||\n#Network")
 
 
 # def find_question(user_id, tag):
@@ -339,9 +351,8 @@ async def request_message(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
     user_id = update.message.from_user.id
     lenPhoto = len(update.message.photo)
     answer_img = []
+    img_base64 = None
     if lenPhoto > 0:
-        pth = "./img/{}/{}".format(user_id, hashtags[0])
-        Path("{}".format(pth)).mkdir(parents=True, exist_ok=True)
         # Лучшее качество
         photo_file = await update.message.photo[-1].get_file()
 
@@ -350,39 +361,44 @@ async def request_message(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
 
         # Кодирование изображения в Base64
         img_base64 = base64.b64encode(img_data).decode('utf-8')
-        # print(img_base64)
 
-        full_text = text
-        soup = BeautifulSoup(text, 'html.parser')
-        # Находим первый тег <b>
-        b_tag = soup.find('b')
+    full_text = text
+    soup = BeautifulSoup(text, 'html.parser')
+    # Находим первый тег <b>
+    b_tag = soup.find('b')
 
-        # Извлекаем текст из тега <b>
-        if b_tag:
-            question = b_tag.text
-            b_tag.decompose()
+    # Извлекаем текст из тега <b>
+    if b_tag:
+        question = b_tag.text
+        b_tag.decompose()
 
-            answer = str(soup)
-            data = {
-                "question": question.replace("\n", ""),
-                "answer": answer,
-                "text": full_text,
-                "tag1": hashtags[0],
-                "img": img_base64
-            }
+        answer = str(soup)
+        data = {
+            "question": question.replace("\n", ""),
+            "answer": answer,
+            "text": full_text,
+            "tag1": hashtags[0],
+            "tag2": hashtags[1],
+            "tag3": hashtags[2],
+        }
+        if img_base64:
+            data["img"] = img_base64
 
-            response = requests.post(
-                add_question_url, data=json.dumps(data), headers=headers)
-        # TODO
-    elif update.message.document != None:
-        pth = "./img/{}/{}".format(user_id, hashtags[0])
-        Path("{}".format(pth)).mkdir(parents=True, exist_ok=True)
-        photo_file = await update.message.document.get_file()
-        filename, file_extension = os.path.splitext(
-            update.message.document.file_name)
-        answer_img.append(
-            "{}/{}{}".format(pth, uuid.uuid4().hex, file_extension))
-        await photo_file.download(answer_img[-1])
+        response = requests.post(
+            add_question_url, data=json.dumps(data), headers=headers)
+    else:
+        await update.message.reply_text("Карточка не содержит вопрос c тегом <b>")
+        return
+    # TODO
+    # elif update.message.document != None:
+    #     pth = "./img/{}/{}".format(user_id, hashtags[0])
+    #     Path("{}".format(pth)).mkdir(parents=True, exist_ok=True)
+    #     photo_file = await update.message.document.get_file()
+    #     filename, file_extension = os.path.splitext(
+    #         update.message.document.file_name)
+    #     answer_img.append(
+    #         "{}/{}{}".format(pth, uuid.uuid4().hex, file_extension))
+    #     await photo_file.download(answer_img[-1])
 
     # add_new_question(user_id, text, ",".join(answer_img), hashtags)
     await update.message.reply_text("Новая карточка создана!")
@@ -393,9 +409,9 @@ def main() -> None:
     # Create the Application and pass it your bot's token.
     application = Application.builder().token(BOT_TOKEN).build()
 
-    # application.add_handler(CommandHandler("start", start))
-    # application.add_handler(CommandHandler("create", create))
-    # application.add_handler(CommandHandler("stats", stats))
+    application.add_handler(CommandHandler("start", start))
+    application.add_handler(CommandHandler("create", create))
+    application.add_handler(CommandHandler("stats", stats))
     # application.add_handler(CallbackQueryHandler(button))
     application.add_handler(MessageHandler(filters.ALL, request_message))
 

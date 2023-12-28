@@ -35,7 +35,7 @@ function Card({ flashcard, handleShow }: any) {
             className="col-3 m-2"
             style={{ backgroundColor: "#f8f9fa" }}
         >
-            <div class=" d-flex justify-content-end">
+            <div className=" d-flex justify-content-end">
                 {isDeleting ? (
                     <button
                         className="delete-button"
@@ -61,10 +61,12 @@ function Card({ flashcard, handleShow }: any) {
             <a onClick={(event) => handleShow(event, flashcard.id)}>
                 <div className={styles.flashcard}>
                     <h2>{flashcard.question}</h2>
-                    <p>{flashcard.answer}</p>
+                    {/* <p>{flashcard.answer}</p> */}
                 </div>
                 <div>
-                    <p>{flashcard.tag1}</p>
+                    <p>#{flashcard.tag1}</p>
+                    {flashcard.tag2 ? <p>#{flashcard.tag2}</p> : null}
+                    {flashcard.tag3 ? <p>#{flashcard.tag3}</p> : null}
                     <p>
                         {new Date(flashcard.repeat_date).toLocaleDateString()}
                     </p>

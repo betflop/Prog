@@ -32,7 +32,6 @@ class PracticesModel(Base):
     level = Column(Integer)
     practice_date = Column(Date, default=date.today())
     repeat_date = Column(Date)
-    # practice_question = UniqueConstraint('question_id', 'user_id')
     __table_args__ = (UniqueConstraint(
         'question_id', 'user_id', name='_question_user_uc'),)
 

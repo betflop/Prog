@@ -1,21 +1,27 @@
-
 .flashcards {
- display: flex;
- flex-wrap: wrap;
- justify-content: space-around;
- padding: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    padding: 20px;
 }
 
 .flashcard {
- background-color: #f8f9fa;
- border-radius: 10px;
- padding: 20px;
- margin: 10px;
- text-align: center;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    padding: 20px;
+    margin: 10px;
+    text-align: center;
 }
 
 .delete-button {
- position: absolute;
- top: 0;
- right: 0;
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+pre {
+    background-color: #f8f9fa; /* Цвет фона */
+    border: 1px solid #cccccc; /* Рамка */
+    padding: 10px; /* Отступ */
+    font-family: "Courier New", Courier, monospace; /* Шрифт */
 }

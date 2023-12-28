@@ -23,8 +23,6 @@ function Flashcards({ tags, searchInput }: any) {
             method: "GET",
             headers: { "Content-Type": "application/json" },
         };
-
-        console.log("fetching");
         fetch("/api/questions", requestOptions)
             .then((response) => response.json())
             .then((data) => {
@@ -39,8 +37,13 @@ function Flashcards({ tags, searchInput }: any) {
 
                 tags = tags.filter((item) => item !== "ready");
                 if (tags.length != 0) {
-                    filteredData = filteredData.filter((item) =>
-                        tags.includes(item.tag1.toLowerCase())
+                    console.log("filteredData");
+                    console.log(filteredData);
+                    filteredData = filteredData.filter(
+                        (item) =>
+                            tags.includes(item.tag1.toLowerCase()) ||
+                            tags.includes((item.tag2 || "").toLowerCase()) ||
+                            tags.includes((item.tag3 || "").toLowerCase())
                     );
                 }
                 if (searchInput != "") {
@@ -82,25 +85,16 @@ function Flashcards({ tags, searchInput }: any) {
         })
             .then((response) => response.json())
             .then((data) => {
-                console.log("success");
-                console.log(data);
-                console.log(data.newDate);
-
                 setCurrentCard({});
-                {
-                    /* currentCard.repeat_date = new Date(data.newDate); */
-                }
                 const updatedFlashcards = flashcards.map((flashcard) => {
                     if (flashcard.id !== currentCard.id) {
                         return flashcard;
                     }
-
                     return {
                         ...flashcard,
                         repeat_date: new Date(data.newDate),
                     };
                 });
-
                 setFlashcards(
                     updatedFlashcards.sort(
                         (a, b) =>
@@ -113,18 +107,18 @@ function Flashcards({ tags, searchInput }: any) {
     };
 
     const handleShow = (event: any, key: any) => {
-        console.log("clicked");
-        console.log(key);
         setCurrentCard(flashcards.filter((item: any) => item.id === key)[0]);
     };
 
     useEffect(() => {
-        console.log("changed current card");
         setCurrentKey(currentCard.id);
-        console.log(currentCard.id);
         setQuestion(currentCard.question);
         setAnswer(currentCard.answer);
-        setImage("data:image/png;base64," + currentCard.img);
+        if (currentCard.img) {
+            setImage("data:image/png;base64," + currentCard.img);
+        } else {
+            setImage("");
+        }
     }, [currentCard]);
 
     useEffect(() => {
@@ -144,29 +138,43 @@ function Flashcards({ tags, searchInput }: any) {
                     />
                 ))}
             </Row>
-            <Modal show={show} onHide={handleClose} animation={false}>
+            <Modal
+                size="lg"
+                aria-labelledby="contained-modal-title-vcenter"
+                centered
+                show={show}
+                onHide={handleClose}
+                animation={false}
+            >
                 <Modal.Header closeButton>
                     <Modal.Title>{question}</Modal.Title>
                 </Modal.Header>
-                <Modal.Body>
-                    <div
-                        style={{
-                            position: "relative",
-                            width: "100%",
-                            height: "100%",
-                        }}
-                    >
-                        <img
-                            src={image}
+                {image && (
+                    <Modal.Body>
+                        <div
                             style={{
-                                objectFit: "contain",
+                                position: "relative",
                                 width: "100%",
                                 height: "100%",
                             }}
-                        />
-                    </div>
+                        >
+                            <img
+                                src={image}
+                                style={{
+                                    objectFit: "contain",
+                                    width: "100%",
+                                    height: "100%",
+                                }}
+                            />
+                        </div>
+                    </Modal.Body>
+                )}
+                <Modal.Body>
+                    <div
+                        style={{ whiteSpace: "pre-wrap" }}
+                        dangerouslySetInnerHTML={{ __html: answer }}
+                    />
                 </Modal.Body>
-                <Modal.Body>{answer}</Modal.Body>
                 <Modal.Footer>
                     <Button
                         variant="secondary"
