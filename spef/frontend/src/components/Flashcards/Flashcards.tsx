@@ -72,8 +72,6 @@ function Flashcards({ tags, searchInput }: any) {
         setShow(false);
     };
     const handleSetStatus = (event: any, status: any) => {
-        console.log("hard");
-        console.log(currentKey);
         fetch(`/api/questions/${currentKey}/practice`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -180,7 +178,7 @@ function Flashcards({ tags, searchInput }: any) {
                         variant="secondary"
                         onClick={(event) => {
                             event.stopPropagation();
-                            handleSetStatus(event, "hard");
+                            handleSetStatus(event, "1");
                         }}
                     >
                         Hard
@@ -189,7 +187,7 @@ function Flashcards({ tags, searchInput }: any) {
                         variant="warning"
                         onClick={(event) => {
                             event.stopPropagation();
-                            handleSetStatus(event, "medium");
+                            handleSetStatus(event, "2");
                         }}
                     >
                         Medium
@@ -198,7 +196,7 @@ function Flashcards({ tags, searchInput }: any) {
                         variant="primary"
                         onClick={(event) => {
                             event.stopPropagation();
-                            handleSetStatus(event, "easy");
+                            handleSetStatus(event, "3");
                         }}
                     >
                         Easy

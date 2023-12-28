@@ -19,6 +19,7 @@ from telegram import __version__ as TG_VER
 from starlette.config import Config
 from bs4 import BeautifulSoup
 from telegram import InputFile
+from io import BytesIO
 
 config = Config(".env")
 
@@ -91,13 +92,16 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         if tag == "ready":
             continue
         currentline.append(InlineKeyboardButton("{} {}".format(
-            tag, count), callback_data="tag_{}".format(tag[0])))
+            tag, count), callback_data="tag_{}".format(tag)))
         if len(currentline) % 2 == 0:
             keyboard.append(currentline)
             currentline = []
     keyboard.append(currentline)
+    print("start keyboard", keyboard)
     reply_markup = InlineKeyboardMarkup(keyboard)
-
+    if len(keyboard[0]) == 0:
+        await update.message.reply_text("☕ Вопросы закончились...\nМожно попить кофе!")
+        return
     await update.message.reply_text("📚 Выберите тему:", reply_markup=reply_markup, parse_mode="HTML")
 
 
@@ -127,7 +131,10 @@ def find_question(user_id, tag):
     response = requests.get(
         question_url+"?next=true&tag={}&user_id={}".format(tag, user_id), headers=headers)
 
-    return response.json()
+    if len(response.json()) == 0:
+        return []
+
+    return response.json()[0]
 
 
 # def find_img(user_id, q_id):
@@ -223,14 +230,16 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
             await query.message.reply_text("☕ Вопросы закончились...\nМожно попить кофе!")
             return
         keyboard = [
-            [InlineKeyboardButton("Flip", callback_data="Flip_{}_{}_{}_{}".format(
-                query.data.split("_")[1], question["id"], question["level"]))],
+            [InlineKeyboardButton("Flip", callback_data="Flip_{}_{}_{}".format(
+                query.data.split("_")[1], question["id"], 1))],  # TODO Удалить level 1
         ]
+        print("Flip_{}_{}_{}".format(
+            query.data.split("_")[1], question["id"], 1))
         reply_markup = InlineKeyboardMarkup(keyboard)
         print('___________________________Выбран вопрос id:{}_________________________'.format(
             question["id"]))
         await query.edit_message_text(text=answer, parse_mode="HTML")
-        await query.message.reply_text("{}".format(stripstring(question["question"])), reply_markup=reply_markup, parse_mode="HTML")
+        await query.message.reply_text("{}".format(question["text"]), reply_markup=reply_markup, parse_mode="HTML")
     elif command == "Flip":
         q_tag = query.data.split("_")[1]
         q_id = query.data.split("_")[2]
@@ -252,6 +261,8 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
 
+        print("answer_{}_{}_{}_1".format(q_tag, q_id, q_level))
+
         text = query.message.text_html.replace(
             '<span class="tg-spoiler">', '').replace('</span>', '')
         striptext = query.message.text
@@ -262,7 +273,7 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         if q_img is None or len(q_img) == 0:
             await query.edit_message_text(text="{}".format(text), reply_markup=reply_markup, parse_mode="HTML")
         else:
-            base64_img_bytes = base64_img.encode('utf-8')
+            base64_img_bytes = q_img.encode('utf-8')
             decoded_image_data = base64.decodebytes(base64_img_bytes)
             await query.edit_message_text(text=text, parse_mode="HTML")
             await query.message.reply_photo(photo=InputFile(BytesIO(decoded_image_data)), caption="-------------------", reply_markup=reply_markup, parse_mode="HTML")
@@ -284,13 +295,12 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         #     delete=True
         #     delete_query(query.from_user.id, query.data.split("_")[2])
         #     await query.message.edit_reply_markup()
-
         if not delete:
             response = requests.post(
-                question_url+"/{}/practice".format(query.data.split("_")[2]), headers=headers, data={
-                    "user_id": query.from_user.id,
+                question_url+"/{}/practice".format(query.data.split("_")[2]), headers=headers, data=json.dumps({
+                    "user_id": str(query.from_user.id),
                     "status": query.data.split("_")[4]
-                }
+                })
             )
             # update_practice(query.from_user.id,
             #                 query.data.split("_")[2], q_level)
@@ -305,11 +315,11 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
             return
 
         keyboard = [
-            [InlineKeyboardButton("Flip", callback_data="Flip_{}_{}_{}_{}".format(
-                query.data.split("_")[1], question[0][0], question[0][2], len(question[0][4])))],
+            [InlineKeyboardButton("Flip", callback_data="Flip_{}_{}_{}".format(
+                query.data.split("_")[1], question["id"], 1))],
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
-        await query.message.reply_text("{}".format(stripstring(question[0][1])), reply_markup=reply_markup, parse_mode="HTML")
+        await query.message.reply_text("{}".format(question["text"]), reply_markup=reply_markup, parse_mode="HTML")
 
 
 async def request_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -410,7 +420,7 @@ def main() -> None:
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CommandHandler("create", create))
     application.add_handler(CommandHandler("stats", stats))
-    # application.add_handler(CallbackQueryHandler(button))
+    application.add_handler(CallbackQueryHandler(button))
     application.add_handler(MessageHandler(filters.ALL, request_message))
 
     # Run the bot until the user presses Ctrl-C

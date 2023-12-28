@@ -44,9 +44,15 @@ class QuestionApiView(ModelApiView):
         return questions
 
     def get_tags(self, only_ready: bool = False, db: Session = Depends(get_db)):
+
+        yesterday = datetime.now() - timedelta(days=1)
+        repeat_date = func.coalesce(PracticesModel.repeat_date, yesterday)
         if only_ready:
-            query = db.query(self.model).filter(
-                PracticesModel.repeat_date <= datetime.now()).all()
+            # query = db.query(self.model).filter(
+            # PracticesModel.repeat_date <= datetime.now()).all()
+            query = db.query(self.model.tag1, self.model.tag2, self.model.tag3, repeat_date.label('repeat_date'))\
+                .join(PracticesModel, PracticesModel.question_id == QuestionModel.id, isouter=True)\
+                .filter(repeat_date <= datetime.now())
         else:
             query = db.query(self.model).all()
 
@@ -59,9 +65,6 @@ class QuestionApiView(ModelApiView):
         freq = {}
         for x in filter(None, tags):
             freq[x] = freq.get(x, 0) + 1
-
-        yesterday = datetime.now() - timedelta(days=1)
-        repeat_date = func.coalesce(PracticesModel.repeat_date, yesterday)
 
         freq["ready"] = db.query(self.model.id, repeat_date.label('repeat_date'))\
             .join(PracticesModel, PracticesModel.question_id == QuestionModel.id, isouter=True)\
@@ -100,15 +103,17 @@ class QuestionApiView(ModelApiView):
 
     def set_practice(self, item_id: int, data: dict, db: Session = Depends(get_db)):
         # Поиск записи
-        record = db.query(PracticesModel).filter(PracticesModel.user_id ==
-                                                 data["user_id"], PracticesModel.question_id == item_id).first()
+        user_id = 1  # data["user_id"]
+        print(data)
+        record = db.query(PracticesModel).filter(
+            PracticesModel.user_id == user_id, PracticesModel.question_id == item_id).first()
 
         # TODO Если кликать несколько раз подряд и жать easy то level увеличивается и дата
         # Обновление записи или создание новой, если запись не найдена
         if record:
-            if data["status"] == 'hard':
+            if data["status"] == '1':
                 record.level = 1
-            elif data["status"] == 'medium':
+            elif data["status"] == '2':
                 record.level = max(record.level - 1, 1)
             else:
                 record.level = min(record.level + 1, 6)
@@ -117,12 +122,12 @@ class QuestionApiView(ModelApiView):
         else:
             new_date = datetime.now() + timedelta(days=2)
             record = PracticesModel(
-                question_id=item_id, user_id=data["user_id"], level=1, repeat_date=new_date)
+                question_id=item_id, user_id=user_id, level=1, repeat_date=new_date)
             db.add(record)
 
         history_record = HistoryModel(
-            question_id=item_id, user_id=data["user_id"])
-
+            question_id=item_id, user_id=user_id
+        )
         db.add(history_record)
 
         # Сохранение изменений
