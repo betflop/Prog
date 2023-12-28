@@ -1,8 +1,8 @@
 import "./App.css";
 import Header from "./components/Header/Header";
-import Body from "./components/Body/Body";
 import Footer from "./components/Footer/Footer";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { Outlet } from "react-router-dom";
 
 function App() {
     return (
@@ -10,7 +10,7 @@ function App() {
             <div className="wrapper">
                 <Header />
                 <div className="app">
-                    <Body></Body>
+                    <Outlet />
                 </div>
                 <Footer />
             </div>

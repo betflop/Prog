@@ -2,18 +2,18 @@ import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import NavDropdown from "react-bootstrap/NavDropdown";
-import { useContext } from "react";
 
 function BasicExample() {
     return (
         <Navbar expand="lg" className="bg-body-tertiary">
             <Container>
-                <Navbar.Brand href="#home">SPEF</Navbar.Brand>
+                <Navbar.Brand href="/">SPEF</Navbar.Brand>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav">
                     <Nav className="me-auto">
-                        <Nav.Link href="#home">Главная</Nav.Link>
-                        <Nav.Link href="#link">Статистика</Nav.Link>
+                        <Nav.Link href="/">Главная</Nav.Link>
+
+                        <Nav.Link href="/statistics">Статистика</Nav.Link>
                         <NavDropdown title="Библиотека" id="basic-nav-dropdown">
                             <NavDropdown.Item href="#action/3.1">
                                 Action
