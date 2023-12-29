@@ -23,48 +23,58 @@ function Flashcards({ tags, searchInput }: any) {
             method: "GET",
             headers: { "Content-Type": "application/json" },
         };
-        fetch("/api/questions", requestOptions)
-            .then((response) => response.json())
-            .then((data) => {
-                let filteredData = [];
-                if (tags.includes("ready")) {
-                    filteredData = data.filter(
-                        (item) => new Date(item.repeat_date) <= new Date()
-                    );
-                } else {
-                    filteredData = data;
-                }
+        const fetchData = () => {
+            fetch("/api/questions", requestOptions)
+                .then((response) => response.json())
+                .then((data) => {
+                    let filteredData = [];
+                    if (tags.includes("ready")) {
+                        filteredData = data.filter(
+                            (item) => new Date(item.repeat_date) <= new Date()
+                        );
+                    } else {
+                        filteredData = data;
+                    }
 
-                tags = tags.filter((item) => item !== "ready");
-                if (tags.length != 0) {
-                    console.log("filteredData");
-                    console.log(filteredData);
-                    filteredData = filteredData.filter(
-                        (item) =>
-                            tags.includes(item.tag1.toLowerCase()) ||
-                            tags.includes((item.tag2 || "").toLowerCase()) ||
-                            tags.includes((item.tag3 || "").toLowerCase())
+                    tags = tags.filter((item) => item !== "ready");
+                    if (tags.length != 0) {
+                        console.log("filteredData");
+                        console.log(filteredData);
+                        filteredData = filteredData.filter(
+                            (item) =>
+                                tags.includes(item.tag1.toLowerCase()) ||
+                                tags.includes(
+                                    (item.tag2 || "").toLowerCase()
+                                ) ||
+                                tags.includes((item.tag3 || "").toLowerCase())
+                        );
+                    }
+                    if (searchInput != "") {
+                        filteredData = filteredData.filter(
+                            (item) =>
+                                item.question
+                                    .toLowerCase()
+                                    .includes(searchInput.toLowerCase()) ||
+                                item.answer
+                                    .toLowerCase()
+                                    .includes(searchInput.toLowerCase())
+                        );
+                    }
+                    setFlashcards(
+                        filteredData.sort(
+                            (a, b) =>
+                                new Date(a.repeat_date) -
+                                new Date(b.repeat_date)
+                        )
                     );
-                }
-                if (searchInput != "") {
-                    filteredData = filteredData.filter(
-                        (item) =>
-                            item.question
-                                .toLowerCase()
-                                .includes(searchInput.toLowerCase()) ||
-                            item.answer
-                                .toLowerCase()
-                                .includes(searchInput.toLowerCase())
-                    );
-                }
-                setFlashcards(
-                    filteredData.sort(
-                        (a, b) =>
-                            new Date(a.repeat_date) - new Date(b.repeat_date)
-                    )
-                );
-            })
-            .catch((error) => console.error("Error:", error));
+                })
+                .catch((error) => {
+                    console.log("Data is null, retrying in 10 seconds");
+                    setTimeout(fetchData, 10000);
+                    console.error("Error:", error);
+                });
+        };
+        fetchData();
     }, [tags, searchInput]);
 
     const handleClose = () => {
