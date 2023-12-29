@@ -15,11 +15,13 @@ class QuestionApiView(ModelApiView):
         questions = []
         yesterday = datetime.now() - timedelta(days=1)
         repeat_date = func.coalesce(PracticesModel.repeat_date, yesterday)
-        result = db.query(self.model.id, self.model.tag1, self.model.tag2, self.model.tag3, self.model.question, self.model.answer, self.model.text, self.model.img, repeat_date.label('repeat_date'))\
+        level = func.coalesce(PracticesModel.level, 1)
+        result = db.query(self.model.id, self.model.tag1, self.model.tag2, self.model.tag3, self.model.question, self.model.answer, self.model.text, self.model.img, repeat_date.label('repeat_date'), level.label('level'))\
             .join(PracticesModel, PracticesModel.question_id == QuestionModel.id, isouter=True)\
             .order_by('repeat_date')\
             .all()
 
+        levelsName = ['F', 'E', 'D', 'C', 'B', 'A']
         for item in result:
             if tag is not None:
                 if item.tag1 != tag and item.tag2 != tag and item.tag3 != tag:
@@ -35,6 +37,7 @@ class QuestionApiView(ModelApiView):
                 "question": item.question,
                 "answer": item.answer,
                 "text": item.text,
+                "level": levelsName[item.level - 1],
                 "img": item.img,
                 "repeat_date": item.repeat_date
             })

@@ -60,6 +60,7 @@ function Flashcards({ tags, searchInput }: any) {
                                     .includes(searchInput.toLowerCase())
                         );
                     }
+                    console.log(filteredData);
                     setFlashcards(
                         filteredData.sort(
                             (a, b) =>

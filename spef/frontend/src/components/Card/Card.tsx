@@ -1,6 +1,8 @@
 import styles from "../Flashcards/Flashcards.module.css";
 import Col from "react-bootstrap/Col";
 import { useState } from "react";
+import { Row } from "react-bootstrap";
+import { Badge } from "react-bootstrap";
 
 function Card({ flashcard, handleShow }: any) {
     const [isDeleting, setIsDeleting] = useState(false);
@@ -35,29 +37,38 @@ function Card({ flashcard, handleShow }: any) {
             className="col-3 m-2"
             style={{ backgroundColor: "#f8f9fa" }}
         >
-            <div className=" d-flex justify-content-end">
-                {isDeleting ? (
-                    <button
-                        className="delete-button"
-                        onClick={(event) => {
-                            event.stopPropagation();
-                            handleDelete(event, flashcard.id);
-                        }}
-                    >
-                        Yes, delete
-                    </button>
-                ) : (
-                    <button
-                        className="delete-button"
-                        onClick={(event) => {
-                            event.stopPropagation();
-                            handleDeleteRequest(event, flashcard.id);
-                        }}
-                    >
-                        X
-                    </button>
-                )}
-            </div>
+            <Row>
+                <Col>
+                    <div className="d-flex justify-content-start">
+                        <Badge bg="secondary">{flashcard.level}</Badge>
+                    </div>
+                </Col>
+                <Col>
+                    <div className=" d-flex justify-content-end">
+                        {isDeleting ? (
+                            <button
+                                className="delete-button"
+                                onClick={(event) => {
+                                    event.stopPropagation();
+                                    handleDelete(event, flashcard.id);
+                                }}
+                            >
+                                Yes, delete
+                            </button>
+                        ) : (
+                            <button
+                                className="delete-button"
+                                onClick={(event) => {
+                                    event.stopPropagation();
+                                    handleDeleteRequest(event, flashcard.id);
+                                }}
+                            >
+                                X
+                            </button>
+                        )}
+                    </div>
+                </Col>
+            </Row>
             <a onClick={(event) => handleShow(event, flashcard.id)}>
                 <div className={styles.flashcard}>
                     <h2>{flashcard.question}</h2>
