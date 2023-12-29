@@ -344,6 +344,17 @@ async def request_message(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
         text = text.replace(i, "&lt;{}&gt;".format(newi))
 
     laststr = text.split("\n")[-1]
+    parts = laststr.split('#', 1)
+
+    if len(parts) == 0:
+        await update.message.reply_text("Для добавления новой карточки необходимо указать хотя бы один хештег")
+        return
+
+    laststr = "#"+parts[1]
+    if "<" in laststr or ">" in laststr:
+        await update.message.reply_text("Последняя строка с хештегами содержит некорректные символы, попробуйте отформатировать её")
+        return
+
     hashtags = re.findall(r"#(\w+)", laststr)
 
     if len(hashtags) == 0:
