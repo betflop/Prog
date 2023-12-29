@@ -13,8 +13,9 @@ RUN npm install
 # Скопируйте исходный код приложения в рабочую директорию
 COPY . .
 
-# Откройте порт 3000 для приложения
-EXPOSE 5173
+# Make port 80 available to the world outside this container
+EXPOSE 80
+
 
 # Запустите приложение
-CMD ["npm", "run", "dev", "--", "--host"]
+CMD ["npm", "run", "dev", "--", "--host", "--port", "80"]
