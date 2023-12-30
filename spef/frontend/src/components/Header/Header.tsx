@@ -2,12 +2,27 @@ import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import NavDropdown from "react-bootstrap/NavDropdown";
+import Button from "react-bootstrap/Button";
+import { faMoon, faSun } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useState } from "react";
 
-function BasicExample() {
+function BasicExample({ isDarkMode, setIsDarkMode }: any) {
+    const handleThemeChange = () => {
+        const newIsDarkMode = !isDarkMode;
+        setIsDarkMode(newIsDarkMode);
+        document.body.classList.toggle("dark");
+        document.documentElement.setAttribute(
+            "data-bs-theme",
+            newIsDarkMode ? "dark" : "light"
+        );
+    };
+
     return (
         <Navbar expand="lg" className="bg-body-tertiary">
             <Container>
                 <Navbar.Brand href="/">SPEF</Navbar.Brand>
+
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav">
                     <Nav className="me-auto">
@@ -31,6 +46,9 @@ function BasicExample() {
                         </NavDropdown>
                     </Nav>
                 </Navbar.Collapse>
+                <Button variant="outline-info" onClick={handleThemeChange}>
+                    <FontAwesomeIcon icon={isDarkMode ? faSun : faMoon} />
+                </Button>
             </Container>
         </Navbar>
     );

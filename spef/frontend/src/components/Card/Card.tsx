@@ -35,8 +35,9 @@ function Card({ flashcard, handleShow }: any) {
         <Col
             key={flashcard.id}
             className="col-3 m-2"
-            style={{ backgroundColor: "#f8f9fa" }}
+            style={{ border: "1px solid black", borderRadius: "15px" }}
         >
+            {/* style={{ backgroundColor: "#f8f9fa" }} */}
             <Row>
                 <Col>
                     <div className="d-flex justify-content-start">

@@ -6,7 +6,7 @@
 }
 
 .flashcard {
-    background-color: #f8f9fa;
+    /* background-color: #f8f9fa; */
     border-radius: 10px;
     padding: 20px;
     margin: 10px;
@@ -20,7 +20,7 @@
 }
 
 pre {
-    background-color: #f8f9fa; /* Цвет фона */
+    /* background-color: #f8f9fa; /1* Цвет фона *1/ */
     border: 1px solid #cccccc; /* Рамка */
     padding: 10px; /* Отступ */
     font-family: "Courier New", Courier, monospace; /* Шрифт */
