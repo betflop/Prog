@@ -6,17 +6,27 @@ import Button from "react-bootstrap/Button";
 import { faMoon, faSun } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
+import { useEffect } from "react";
 
 function BasicExample({ isDarkMode, setIsDarkMode }: any) {
     const handleThemeChange = () => {
         const newIsDarkMode = !isDarkMode;
+        console.log("handleThemeChange" + newIsDarkMode);
         setIsDarkMode(newIsDarkMode);
-        document.body.classList.toggle("dark");
+        {
+            /* document.body.classList.toggle("dark"); */
+        }
         document.documentElement.setAttribute(
             "data-bs-theme",
             newIsDarkMode ? "dark" : "light"
         );
     };
+
+    useEffect(() => {
+        console.log("useEffect");
+        console.log(isDarkMode);
+        handleThemeChange();
+    }, []);
 
     return (
         <Navbar expand="lg" className="bg-body-tertiary">
