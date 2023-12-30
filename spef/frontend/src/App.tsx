@@ -6,7 +6,12 @@ import { Outlet } from "react-router-dom";
 import { useState } from "react";
 
 function App() {
-    const [isDarkMode, setIsDarkMode] = useState(false);
+
+    const getUserPreferredTheme = () => {
+      const isSystemDarkTheme = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      return isSystemDarkTheme ? true : false;
+};
+    const [isDarkMode, setIsDarkMode] = useState(getUserPreferredTheme());
 
     return (
         <>
