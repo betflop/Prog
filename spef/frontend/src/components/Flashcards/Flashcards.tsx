@@ -6,7 +6,7 @@ import { useState } from "react";
 import { useEffect } from "react";
 import Card from "../Card/Card";
 
-function Flashcards({ tags, searchInput }: any) {
+function Flashcards({ tags, tagsUrl, setTags, searchInput }: any) {
     const [flashcards, setFlashcards] = useState([
         { id: 99999, question: "---", answer: "---" },
     ]);
@@ -95,7 +95,7 @@ function Flashcards({ tags, searchInput }: any) {
             .then((response) => response.json())
             .then((data) => {
                 setCurrentCard({});
-                const updatedFlashcards = flashcards.map((flashcard) => {
+                let updatedFlashcards = flashcards.map((flashcard) => {
                     if (flashcard.id !== currentCard.id) {
                         return flashcard;
                     }
@@ -104,12 +104,16 @@ function Flashcards({ tags, searchInput }: any) {
                         repeat_date: new Date(data.newDate),
                     };
                 });
-                setFlashcards(
-                    updatedFlashcards.sort(
-                        (a, b) =>
-                            new Date(a.repeat_date) - new Date(b.repeat_date)
-                    )
+
+                updatedFlashcards = updatedFlashcards.sort(
+                    (a, b) => new Date(a.repeat_date) - new Date(b.repeat_date)
                 );
+                if (tags.includes("ready")) {
+                    updatedFlashcards = updatedFlashcards.filter(
+                        (item) => new Date(item.repeat_date) <= new Date()
+                    );
+                }
+                setFlashcards(updatedFlashcards);
             })
             .catch((error) => console.error("Error:", error));
         setShow(false);

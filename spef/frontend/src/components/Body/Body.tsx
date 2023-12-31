@@ -88,7 +88,12 @@ function Body() {
                             <SearchBar onChange={handleSearchInputChange} />
                         </Col>
                     </Row>
-                    <Flashcards tags={currentTags} searchInput={searchInput} />
+                    <Flashcards
+                        tags={currentTags}
+                        tagsUrl={tags}
+                        setTags={setTags}
+                        searchInput={searchInput}
+                    />
                 </>
             )}
         </>
