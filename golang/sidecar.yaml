@@ -2,7 +2,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
- name: nginx-sidecar-deployment
+ name: nginx-sidecar-deployment123
 spec:
  replicas: 1
  selector:
@@ -13,31 +13,46 @@ spec:
      labels:
        app: nginx-sidecar
    spec:
-     shareProcessNamespace: true
+     # shareProcessNamespace: true
      containers:
      - name: nginx
        image: pawwlyk52/my-nginx-image
+       # image: nginx
        ports:
        - containerPort: 80
-       volumeMounts:
-       - name: nginx-config
-         mountPath: /etc/nginx/nginx2.conf
-     - name: sidecar
-       image: busybox
-       command: ["sh", "-c", "while true; do echo 'Sidecar container is running'; sleep 30; done"]
-     volumes:
-     - name: nginx-config
-       configMap:
-         name: nginx-config # place ConfigMap `nginx-conf` on /etc/nginx
-         items:
-           - key: nginx.conf
-             path: nginx.conf
+       # volumeMounts:
+       # - name: nginx-config
+       #   mountPath: /etc/nginx/nginx2.conf
+     # - name: sidecar
+     #   image: busybox
+     #   command: ["sh", "-c", "while true; do echo 'Sidecar container is running'; sleep 30; done"]
+     # volumes:
+     # - name: nginx-config
+     #   configMap:
+     #     name: nginx-config # place ConfigMap `nginx-conf` on /etc/nginx
+     #     items:
+     #       - key: nginx.conf
+     #         path: nginx.conf
+
+# ---
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: sidecarlb
+#   annotations:
+# spec:
+#   ports:
+#   - port: 80
+#     targetPort: 80
+#   selector:
+#     app: nginx-sidecar
+#   type: LoadBalancer
 
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: sidecarlb
+  name: nginx-service
   annotations:
 spec:
   ports:
@@ -45,65 +60,65 @@ spec:
     targetPort: 80
   selector:
     app: nginx-sidecar
-  type: LoadBalancer
+  type: NodePort
 
---- 
-apiVersion: v1
-kind: ConfigMap
-metadata:
- name: nginx-config
-data:
- nginx.conf: |
-  user nginx;
+#--- 
+#apiVersion: v1
+#kind: ConfigMap
+#metadata:
+# name: nginx-config
+#data:
+# nginx.conf: |
+#  user nginx;
 
-  worker_processes    auto;
+#  worker_processes    auto;
 
-  events { worker_connections 1024; }
+#  events { worker_connections 1024; }
 
-  http {
-      map $http_upgrade $connection_upgrade {
-          default upgrade;
-          '' close;
-      }
+#  http {
+#      map $http_upgrade $connection_upgrade {
+#          default upgrade;
+#          '' close;
+#      }
 
-      upstream websocket1 {
-          server 172.17.0.5:9995;
-      }
+#      upstream websocket1 {
+#          server 172.17.0.5:9995;
+#      }
 
-      upstream websocket2 {
-          server rtty-service:9995;
-      }
+#      upstream websocket2 {
+#          server rtty-service:9995;
+#      }
 
-      #####
+#      #####
 
-      server {
-          # Hide nginx version information.
-          server_tokens off;
-          proxy_connect_timeout      600;
-          proxy_send_timeout         600;
-          proxy_read_timeout         600;
-          listen  80;
-          root    /usr/share/nginx/html;
-          include /etc/nginx/mime.types;
+#      server {
+#          # Hide nginx version information.
+#          server_tokens off;
+#          proxy_connect_timeout      600;
+#          proxy_send_timeout         600;
+#          proxy_read_timeout         600;
+#          listen  80;
+#          root    /usr/share/nginx/html;
+#          include /etc/nginx/mime.types;
 
-          location / {
-              try_files $uri $uri/ /index.html;
-          }
+#          location / {
+#              try_files $uri $uri/ /index.html;
+#          }
 
-          location /ws1 {
-              proxy_pass http://websocket1/ws;
-              proxy_http_version 1.1;
-              proxy_set_header Upgrade $http_upgrade;
-              proxy_set_header Connection $connection_upgrade;
-              proxy_set_header Host $host;
-          }
+#          location /ws1 {
+#              proxy_pass http://websocket1/ws;
+#              proxy_http_version 1.1;
+#              proxy_set_header Upgrade $http_upgrade;
+#              proxy_set_header Connection $connection_upgrade;
+#              proxy_set_header Host $host;
+#          }
 
-          location /ws2 {
-              proxy_pass http://websocket2/ws;
-              proxy_http_version 1.1;
-              proxy_set_header Upgrade $http_upgrade;
-              proxy_set_header Connection $connection_upgrade;
-              proxy_set_header Host $host;
-          }
-      }
-  }
+#          location /ws2 {
+#              proxy_pass http://websocket2/ws;
+#              proxy_http_version 1.1;
+#              proxy_set_header Upgrade $http_upgrade;
+#              proxy_set_header Connection $connection_upgrade;
+#              proxy_set_header Host $host;
+#          }
+#      }
+#  }
