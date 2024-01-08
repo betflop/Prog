@@ -1,0 +1,37 @@
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+ name: ws-test-ingress
+ annotations: 
+   nginx.ingress.kubernetes.io/rewrite-target: /ws$1
+   nginx.ingress.kubernetes.io/use-regex: "true"
+   nginx.ingress.kubernetes.io/websocket-services: rtty-service
+   kubernetes.io/ingress.class: nginx
+   nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+   nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+   nginx.ingress.kubernetes.io/server-snippets: |
+    location / {
+     proxysetheader Upgrade $httpupgrade;
+     proxyhttpversion 1.1;
+     proxysetheader X-Forwarded-Host $httphost;
+     proxysetheader X-Forwarded-Proto $scheme;
+     proxysetheader X-Forwarded-For $remoteaddr;
+     proxysetheader Host $host;
+     proxysetheader Connection "upgrade";
+     proxycachebypass $httpupgrade;
+     }
+spec:
+ ingressClassName: nginx
+ rules:
+ -
+  http:
+    paths:
+      - pathType: ImplementationSpecific
+        path: "/16d36022-82ff-40fb-b9e8-9f1891fb3635/(.*)"
+        backend:
+          service:
+            name: rtty-service
+            port:
+              number: 9994
+
