@@ -239,14 +239,17 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         print('___________________________Выбран вопрос id:{}_________________________'.format(
             question["id"]))
         await query.edit_message_text(text=answer, parse_mode="HTML")
-        await query.message.reply_text("{}".format(question["text"]), reply_markup=reply_markup, parse_mode="HTML")
+        await query.message.reply_text("<b><u>{}</u></b>\n".format(question["question"]), reply_markup=reply_markup, parse_mode="HTML")
     elif command == "Flip":
         q_tag = query.data.split("_")[1]
         q_id = query.data.split("_")[2]
         q_level = query.data.split("_")[3]
-        q_img = requests.get(
+        q_json = requests.get(
             question_url+"/{}".format(q_id), headers=headers
-        ).json()["img"]
+        ).json()
+        q_img = q_json["img"]
+        question_text = q_json["text"]
+
         # if q_img != "0":
         # q_img = find_img(query.from_user.id, q_id)[0][1]
 
@@ -263,12 +266,16 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
         print("answer_{}_{}_{}_1".format(q_tag, q_id, q_level))
 
-        text = query.message.text_html.replace(
+        text = question_text.replace(
             '<span class="tg-spoiler">', '').replace('</span>', '')
-        striptext = query.message.text
-        for i in re.findall('<.+?\n?.+?>', striptext):
-            newi = i.replace("<", "").replace(">", "")
-            text = text.replace(i, "&lt;{}&gt;".format(newi))
+
+        # text = query.message.text_html.replace(
+        # '<span class="tg-spoiler">', '').replace('</span>', '')
+
+        # striptext = query.message.text
+        # for i in re.findall('<.+?\n?.+?>', striptext):
+        # newi = i.replace("<", "").replace(">", "")
+        # text = text.replace(i, "&lt;{}&gt;".format(newi))
 
         if q_img is None or len(q_img) == 0:
             await query.edit_message_text(text="{}".format(text), reply_markup=reply_markup, parse_mode="HTML")
@@ -319,7 +326,7 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
                 query.data.split("_")[1], question["id"], 1))],
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
-        await query.message.reply_text("{}".format(question["text"]), reply_markup=reply_markup, parse_mode="HTML")
+        await query.message.reply_text("<b><u>{}</u></b>\n".format(question["question"]), reply_markup=reply_markup, parse_mode="HTML")
 
 
 async def request_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
