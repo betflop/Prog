@@ -34,7 +34,7 @@ terminal1.loadAddon(linkAddon1);
 terminal1.focus();
 fitAddon1.fit();
 
-const socket1 = new WebSocket('ws://localhost:9994/ws');
+const socket1 = new WebSocket('ws://192.168.0.121/16d36022-82ff-40fb-b9e8-9f1891fb3635/');
 console.log("socket1", socket1)
 
 // workaround
