@@ -1,0 +1,62 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+ name: rtty-deployment-dind
+spec:
+ replicas: 1
+ selector:
+   matchLabels:
+     app: rtty-dind
+ template:
+   metadata:
+     labels:
+       app: rtty-dind
+   spec:
+     shareProcessNamespace: true
+     containers:
+     - name: rtty-dind
+       image: pawwlyk52/rttyexe-dind2
+       securityContext:
+         privileged: true
+       # imagePullPolicy: Never
+       ports:
+       - containerPort: 9994
+       env:
+        - name: TERM
+          value: "xterm"
+        - name: PORT
+          value: "9994"
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+ name: rtty-service-dind
+ labels:
+   app: rtty-dind
+spec:
+ selector:
+   app: rtty-dind
+ ports:
+   - protocol: TCP
+     port: 9994
+     targetPort: 9994
+     # nodePort: 30081
+ type: NodePort
+
+--- 
+
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: rttylb
+#   annotations:
+# spec:
+#   ports:
+#   - port: 80
+#     targetPort: 9994
+#   selector:
+#     app: rtty
+#   type: LoadBalancer

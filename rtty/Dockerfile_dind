@@ -1,24 +1,26 @@
-FROM --platform=linux/amd64 docker:19.03-dind
-RUN apt update && apt install  openssh-server sudo -y
+FROM --platform=linux/amd64 docker:dind
 
-RUN useradd -rm -d /home/ubuntu -s /bin/bash -g root -G sudo -u 1000 test 
-RUN  echo 'test:test' | chpasswd
+RUN apk add --no-cache libc6-compat
+ENV LD_LIBRARY_PATH=/usr/lib/compat:$LD_LIBRARY_PATH
 
-RUN ["apt-get", "update"]
-RUN ["apt-get", "install", "-y", "vim"]
+RUN apk add --no-cache vim
+#RUN apt update && apt install  openssh-server sudo -y
 
-RUN service ssh start
-EXPOSE ${PORT}
+#RUN useradd -rm -d /home/ubuntu -s /bin/bash -g root -G sudo -u 1000 test
+#RUN  echo 'test:test' | chpasswd
 
 RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/v1.1.5/zsh-in-docker.sh)" -- \
     -t robbyrussell
 
-
-# COPY ./rttyLinux /bin/exe_rtty
 COPY ./exe_rtty /bin/exe_rtty
-# COPY ./getpods /bin/getpods
-# COPY ./getpods2 /bin/getpods2
-# COPY ./config /bin/config
 
 ARG TERM=xterm
-CMD bin/exe_rtty run zsh -p $PORT --font "Roboto Mono" --font-size 20 
+
+# Копирование скрипта в контейнер
+COPY ./launch.sh /bin/launch.sh
+
+# Делаем скрипт исполняемым
+RUN chmod +x /bin/launch.sh
+
+# Установка скрипта в качестве ENTRYPOINT
+ENTRYPOINT ["/bin/launch.sh"]
