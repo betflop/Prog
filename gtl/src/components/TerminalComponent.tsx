@@ -3,9 +3,14 @@ import { Terminal } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
 import { WebLinksAddon } from 'xterm-addon-web-links';
 import React, { useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 
 function TerminalComponent() {
+    const { id, guid } = useParams();
 
+
+console.log("id -------- ", id);
+console.log("guid -------- ", guid);
 
     useEffect(() => {
         
@@ -34,7 +39,7 @@ terminal1.loadAddon(linkAddon1);
 terminal1.focus();
 fitAddon1.fit();
 
-const socket1 = new WebSocket('ws://192.168.0.121/16d36022-82ff-40fb-b9e8-9f1891fb3635/');
+const socket1 = new WebSocket('ws://192.168.0.121/' + guid + '/');
 console.log("socket1", socket1)
 
 // workaround
@@ -75,6 +80,8 @@ socket1.onopen = () => {
       event: "sendKey",
       data: data,
     }
+
+    console.log("socker1.send msg", msg);
     socket1.send(JSON.stringify(msg));
   })
 
@@ -83,8 +90,7 @@ socket1.onopen = () => {
   }
 
   socket1.onmessage = (e) => {
-
-    console.log("onmessage")
+    console.log("onmessage e.data", e.data)
     terminal1.write(e.data);
   }
 
@@ -107,6 +113,15 @@ socket1.onopen = () => {
   window.addEventListener("resize", () => {
     fitAddon1.fit()
   })
+
+    const msgR = {
+      event: "sendKey",
+      data: "\r",
+    }
+    socket1.send(JSON.stringify(msgR));
+    socket1.send(JSON.stringify(msgR));
+    socket1.send(JSON.stringify(msgR));
+
 }
 
     }, [])

@@ -34,4 +34,11 @@ spec:
             name: rtty-service
             port:
               number: 9994
+      - pathType: ImplementationSpecific
+        path: "/16d36022-82ff-40fb-b9e8-9f1891fb3333/(.*)"
+        backend:
+          service:
+            name: rtty-service3
+            port:
+              number: 9994
 

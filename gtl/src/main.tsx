@@ -4,6 +4,7 @@ import App from './App.tsx'
 import './index.css'
 import { createBrowserRouter, RouterProvider, Route } from "react-router-dom";
 import Body from "./components/Body/Body";
+import TerminalComponent from "./components/TerminalComponent";
 
 const router = createBrowserRouter([
     {
@@ -11,6 +12,10 @@ const router = createBrowserRouter([
         element: <App />,
         children: [
             { path: "/", element: <Body /> },
+            {
+                path: "/playground/:id/:guid",
+                element: <TerminalComponent />,
+            },
         ],
     },
 ]);
