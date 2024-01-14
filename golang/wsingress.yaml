@@ -48,4 +48,11 @@ spec:
             name: rtty-service-dind
             port:
               number: 9994
+      - pathType: ImplementationSpecific
+        path: "/16d36022-82ff-40fb-b9e8-9f1891fb1111/(.*)"
+        backend:
+          service:
+            name: rtty-service-kubectl
+            port:
+              number: 9994
 

@@ -20,7 +20,7 @@ const playgrounds = [
         id: 3,
         name: "playground3",
         description: "kubernetes",
-        guid: "16d36022-82ff-40fb-b9e8-9f1891fb3333"
+        guid: "16d36022-82ff-40fb-b9e8-9f1891fb1111"
     }
 ]
 
