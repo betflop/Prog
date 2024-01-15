@@ -1,10 +1,12 @@
+
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
  name: test-ingress
  annotations: 
     # nginx.ingress.kubernetes.io/websocket-services: rtty-service
-    kubernetes.io/ingress.class: nginx
+    # kubernetes.io/ingress.class: nginx
+    kubernetes.io/ingress.class: traefik
     # nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
     # nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
     # nginx.ingress.kubernetes.io/server-snippets: |
@@ -19,7 +21,8 @@ metadata:
     #   proxycachebypass $httpupgrade;
     #   }
 spec:
- ingressClassName: nginx
+ # ingressClassName: nginx
+ ingressClassName: traefik
  rules:
   -
    http:
@@ -38,3 +41,4 @@ spec:
        #       name: rtty-service
        #       port:
        #         number: 9994
+

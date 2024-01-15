@@ -1,0 +1,79 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: strip-prefix
+  namespace: default
+spec:
+  stripPrefix:
+    prefixes:
+      - /16d36022-82ff-40fb-b9e8-9f1891fb3635
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+ name: ws-test-ingress
+ annotations: 
+#    # nginx.ingress.kubernetes.io/rewrite-target: /ws$1
+#    # nginx.ingress.kubernetes.io/use-regex: "true"
+#    # nginx.ingress.kubernetes.io/websocket-services: rtty-service
+#    # kubernetes.io/ingress.class: nginx
+#    # traefik.ingress.kubernetes.io/rewrite-target: /ws$1
+#    # traefik.ingress.kubernetes.io/use-regex: "true"
+#    # traefik.ingress.kubernetes.io/websocket-services: rtty-service
+   kubernetes.io/ingress.class: traefik
+   traefik.ingress.kubernetes.io/router.middlewares: default-strip-prefix@kubernetescrd
+#    traefik.ingress.kubernetes.io/router.middlewares: default-replace-path@kubernetescrd
+ 
+#    # traefik.ingress.kubernetes.io/router.middlewares: default-stripprefix@kubernetescrd
+#    # nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+#    # nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+#    # nginx.ingress.kubernetes.io/server-snippets: |
+#    #  location / {
+#    #   proxysetheader Upgrade $httpupgrade;
+#    #   proxyhttpversion 1.1;
+#    #   proxysetheader X-Forwarded-Host $httphost;
+#    #   proxysetheader X-Forwarded-Proto $scheme;
+#    #   proxysetheader X-Forwarded-For $remoteaddr;
+#    #   proxysetheader Host $host;
+#    #   proxysetheader Connection "upgrade";
+#    #   proxycachebypass $httpupgrade;
+#    #   }
+spec:
+ # ingressClassName: nginx
+ ingressClassName: traefik
+ rules:
+ -
+  http:
+    paths:
+      - pathType: Prefix
+        path: "/16d36022-82ff-40fb-b9e8-9f1891fb3635/ws"
+        # path: "/16d36022-82ff-40fb-b9e8-9f1891fb3635"
+        # path: "/ws"
+        # path: "/asd/(.*)"
+        backend:
+          service:
+            name: rtty-service
+            port:
+              number: 9994
+#       # - pathType: ImplementationSpecific
+#       #   path: "/16d36022-82ff-40fb-b9e8-9f1891fb3333/(.*)"
+#       #   backend:
+#       #     service:
+#       #       name: rtty-service3
+#       #       port:
+#       #         number: 9994
+#       # - pathType: ImplementationSpecific
+#       #   path: "/16d36022-82ff-40fb-b9e8-9f1891fb5555/(.*)"
+#       #   backend:
+#       #     service:
+#       #       name: rtty-service-dind
+#       #       port:
+#       #         number: 9994
+#       # - pathType: ImplementationSpecific
+#       #   path: "/16d36022-82ff-40fb-b9e8-9f1891fb1111/(.*)"
+#       #   backend:
+#       #     service:
+#       #       name: rtty-service-kubectl
+#       #       port:
+#       #         number: 9994
+
