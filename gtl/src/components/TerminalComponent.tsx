@@ -39,7 +39,7 @@ terminal1.loadAddon(linkAddon1);
 terminal1.focus();
 fitAddon1.fit();
 
-const socket1 = new WebSocket('ws://192.168.0.121/' + guid + '/');
+const socket1 = new WebSocket('ws://192.168.0.248/' + guid + '/ws');
 console.log("socket1", socket1)
 
 // workaround
