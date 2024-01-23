@@ -7,9 +7,15 @@ spec:
   stripPrefix:
     prefixes:
       - /16d36022-82ff-40fb-b9e8-9f1891fb3635
-      - /16d36022-82ff-40fb-b9e8-9f1891fb3333
       - /16d36022-82ff-40fb-b9e8-9f1891fb5555
       - /16d36022-82ff-40fb-b9e8-9f1891fb1111
+# ---
+# apiVersion: traefik.containo.us/v1alpha1
+# kind: Middleware
+# metadata:
+#  name: default-websocket
+# spec:
+#  webSocket: {}
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -18,6 +24,7 @@ metadata:
  annotations: 
    kubernetes.io/ingress.class: traefik
    traefik.ingress.kubernetes.io/router.middlewares: default-strip-prefix@kubernetescrd
+   traefik.ingress.kubernetes.io/router.middlewares: default-websocket@kubernetescrd
 spec:
  ingressClassName: traefik
  rules:
@@ -29,13 +36,6 @@ spec:
         backend:
           service:
             name: rtty-service
-            port:
-              number: 9994
-      - pathType: Prefix
-        path: "/16d36022-82ff-40fb-b9e8-9f1891fb3333/ws"
-        backend:
-          service:
-            name: rtty-service3
             port:
               number: 9994
       - pathType: Prefix
@@ -52,4 +52,58 @@ spec:
             name: rtty-service-kubectl
             port:
               number: 9994
+
+
+
+
+# apiVersion: traefik.containo.us/v1alpha1
+# kind: IngressRoute
+# metadata:
+#  name: ws-test-ingress
+#  namespace: default
+#  annotations: 
+#     kubernetes.io/ingress.class: traefik
+#     traefik.ingress.kubernetes.io/router.middlewares: default-strip-prefix@kubernetescrd
+# spec:
+#  entryPoints:
+#    - web
+#  routes:
+#    - match: PathPrefix(`/16d36022-82ff-40fb-b9e8-9f1891fb3635/ws`)
+#      kind: Rule
+#      services:
+#        - name: rtty-service
+#          port: 9994
+#          strategy: RoundRobin
+#          sticky:
+#            cookie:
+#              httpOnly: true
+#              name: sessioncookie
+#              secure: true
+#              sameSite: none
+#    - match: PathPrefix(`/16d36022-82ff-40fb-b9e8-9f1891fb5555/ws`)
+#      kind: Rule
+#      services:
+#        - name: rtty-service-dind
+#          port: 9994
+#          strategy: RoundRobin
+#          sticky:
+#            cookie:
+#              httpOnly: true
+#              name: sessioncookie
+#              secure: true
+#              sameSite: none
+#    - match: PathPrefix(`/16d36022-82ff-40fb-b9e8-9f1891fb1111/ws`)
+#      kind: Rule
+#      services:
+#        - name: rtty-service-kubectl
+#          port: 9994
+#          strategy: RoundRobin
+#          sticky:
+#            cookie:
+#              httpOnly: true
+#              name: sessioncookie
+#              secure: true
+#              sameSite: none
+
+
 

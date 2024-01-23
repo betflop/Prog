@@ -4,7 +4,7 @@ kind: Deployment
 metadata:
  name: rtty-deployment
 spec:
- replicas: 1
+ replicas: 2
  selector:
    matchLabels:
      app: rtty
@@ -42,7 +42,7 @@ spec:
      port: 9994
      targetPort: 9994
      # nodePort: 30081
- type: NodePort
+ type: ClusterIP
 
 --- 
 

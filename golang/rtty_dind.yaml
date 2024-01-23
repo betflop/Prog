@@ -16,9 +16,12 @@ spec:
      shareProcessNamespace: true
      containers:
      - name: rtty-dind
-       image: pawwlyk52/rttyexe-dind2
+       # image: pawwlyk52/rttyexe-dind2
+       image: pawwlyk52/rtty_dind4
        securityContext:
          privileged: true
+         # runAsUser: 1000
+         # runAsGroup: 1000
        # imagePullPolicy: Never
        ports:
        - containerPort: 9994
@@ -44,7 +47,7 @@ spec:
      port: 9994
      targetPort: 9994
      # nodePort: 30081
- type: NodePort
+ type: ClusterIP
 
 --- 
 

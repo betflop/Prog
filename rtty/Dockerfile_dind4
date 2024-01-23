@@ -1,0 +1,31 @@
+FROM --platform=linux/amd64 docker:25.0-dind-rootless
+
+USER root
+RUN apk update && apk add sudo && apk add vim && apk add libc6-compat
+
+EXPOSE ${PORT}
+
+RUN addgroup -S sudo && addgroup rootless sudo
+RUN echo "%sudo ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+
+USER rootless
+RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/v1.1.5/zsh-in-docker.sh)" -- \
+    -t robbyrussell
+
+COPY ./exe_rtty /bin/exe_rtty
+COPY ./launch.sh /bin/launch.sh
+
+ARG TERM=xterm
+ENV DOCKER_HOST=unix:///run/user/1000/docker.sock
+CMD bin/exe_rtty run zsh -p $PORT --font "Roboto Mono" --font-size 20
+
+USER root
+# Делаем скрипт исполняемым
+RUN chmod +x /bin/launch.sh
+RUN delgroup rootless sudo
+RUN apk del sudo
+
+USER rootless
+# Установка скрипта в качестве ENTRYPOINT
+ENTRYPOINT ["/bin/launch.sh"]
+
