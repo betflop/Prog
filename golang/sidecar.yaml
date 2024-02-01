@@ -7,14 +7,22 @@ spec:
  replicas: 1
  selector:
    matchLabels:
-     app: nginx-sidecar
+     app.kubernetes.io/name: nginx-sidecar
  template:
    metadata:
      labels:
-       app: nginx-sidecar
+       app.kubernetes.io/name: nginx-sidecar
    spec:
      # shareProcessNamespace: true
+     securityContext:
+       runAsUser: 5000
+       runAsGroup: 5000
      containers:
+     - name: sidecar
+       image: busybox
+       command: ["sh", "-c", "while true; do echo 'Sidecar container is running'; sleep 30; done"]
+       ports:
+        - containerPort: 80
      - name: nginx
        image: pawwlyk52/my-nginx-image
        # image: nginx
@@ -23,9 +31,6 @@ spec:
        # volumeMounts:
        # - name: nginx-config
        #   mountPath: /etc/nginx/nginx2.conf
-     # - name: sidecar
-     #   image: busybox
-     #   command: ["sh", "-c", "while true; do echo 'Sidecar container is running'; sleep 30; done"]
      # volumes:
      # - name: nginx-config
      #   configMap:
@@ -59,7 +64,7 @@ spec:
   - port: 80
     targetPort: 80
   selector:
-    app: nginx-sidecar
+    app.kubernetes.io/name: nginx-sidecar
   type: ClusterIP
 
 #--- 

@@ -7,11 +7,11 @@ spec:
  replicas: 1
  selector:
    matchLabels:
-     app: rtty-dind
+     app.kubernetes.io/name: rtty-dind
  template:
    metadata:
      labels:
-       app: rtty-dind
+       app.kubernetes.io/name: rtty-dind
    spec:
      shareProcessNamespace: true
      containers:
@@ -41,7 +41,7 @@ metadata:
    app: rtty-dind
 spec:
  selector:
-   app: rtty-dind
+   app.kubernetes.io/name: rtty-dind
  ports:
    - protocol: TCP
      port: 9994
