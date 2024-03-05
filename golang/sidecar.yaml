@@ -14,15 +14,15 @@ spec:
        app.kubernetes.io/name: nginx-sidecar
    spec:
      # shareProcessNamespace: true
-     securityContext:
-       runAsUser: 5000
-       runAsGroup: 5000
+     # securityContext:
+     #   runAsUser: 5000
+     #   runAsGroup: 5000
      containers:
-     - name: sidecar
-       image: busybox
-       command: ["sh", "-c", "while true; do echo 'Sidecar container is running'; sleep 30; done"]
-       ports:
-        - containerPort: 80
+     # - name: sidecar
+     #   image: busybox
+     #   command: ["sh", "-c", "while true; do echo 'Sidecar container is running'; sleep 30; done"]
+     #   ports:
+     #    - containerPort: 80
      - name: nginx
        image: pawwlyk52/my-nginx-image
        # image: nginx

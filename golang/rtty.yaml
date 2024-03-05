@@ -1,10 +1,19 @@
-
+# https://kubernetes.io/docs/concepts/configuration/configmap/
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: myconfig
+  namespace: default
+data:
+  testkey: "hello"
+  testkey2: "hello2"
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
  name: rtty-deployment
 spec:
- replicas: 2
+ replicas: 1
  selector:
    matchLabels:
      app: rtty
@@ -14,20 +23,32 @@ spec:
        app: rtty
    spec:
      shareProcessNamespace: true
+     enableServiceLinks: false
      containers:
      - name: rtty
-       image: pawwlyk52/rttyexe2
+       image: pawwlyk52/rtty_user
        # imagePullPolicy: Never
-       ports:
-       - containerPort: 9994
+       # ports:
+       # - containerPort: 9994
        env:
         - name: TERM
           value: "xterm"
         - name: PORT
           value: "9994"
-
+       volumeMounts:
+         - name: testv
+           mountPath: /home/test/testconfig
+           subPath: testkey
+     volumes:
+       - name: testv
+         configMap:
+           name: myconfig
+           # items:
+           #   - key: testkey
+           #     path: myconfigmap.conf
+           #   - key: testkey2
+           #     path: myconfigmap2.conf
 ---
-
 apiVersion: v1
 kind: Service
 metadata:

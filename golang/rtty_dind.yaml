@@ -1,10 +1,9 @@
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
  name: rtty-deployment-dind
 spec:
- replicas: 1
+ replicas: 2
  selector:
    matchLabels:
      app.kubernetes.io/name: rtty-dind
@@ -13,6 +12,8 @@ spec:
      labels:
        app.kubernetes.io/name: rtty-dind
    spec:
+     automountServiceAccountToken: false
+     enableServiceLinks: false
      shareProcessNamespace: true
      containers:
      - name: rtty-dind
