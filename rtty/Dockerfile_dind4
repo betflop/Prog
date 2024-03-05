@@ -28,4 +28,3 @@ RUN apk del sudo
 USER rootless
 # Установка скрипта в качестве ENTRYPOINT
 ENTRYPOINT ["/bin/launch.sh"]
-

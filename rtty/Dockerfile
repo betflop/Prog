@@ -1,35 +1,30 @@
-FROM --platform=linux/amd64 ubuntu:22.04  
-RUN apt update && apt install  openssh-server sudo -y
+FROM --platform=linux/amd64 ubuntu:22.04
 
-RUN useradd -rm -d /home/ubuntu -s /bin/bash -g root -G sudo -u 1000 test 
-RUN  echo 'test:test' | chpasswd
-
-RUN ["apt-get", "update"]
+RUN apt update && apt install sudo -y
 RUN ["apt-get", "install", "-y", "vim"]
 
-RUN service ssh start
-# ARG PORT=9996
-# EXPOSE 22
-EXPOSE ${PORT}
+RUN groupadd -r test && useradd -r -m -g test test
+RUN chown test:test /home/test
+RUN addgroup test sudo
+RUN echo "%sudo ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
+RUN apt install wget -y
+USER test
 RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/v1.1.5/zsh-in-docker.sh)" -- \
     -t robbyrussell
 
-
-# COPY ./rttyLinux /bin/exe_rtty
 COPY ./exe_rtty /bin/exe_rtty
 COPY ./getpods /bin/getpods
 COPY ./getpods2 /bin/getpods2
 COPY ./config /bin/config
 
-# Default powerline10k theme, no plugins installed
-# RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/v1.1.5/zsh-in-docker.sh)"
-# RUN   sed -i "s|powerlevel10k/powerlevel10k|robbyrussell|" ~/.zshrc
+USER root
+RUN delgroup test sudo
+ENV SUDO_FORCE_REMOVE=yes
+RUN apt-get purge -y sudo && apt-get autoremove -y
 
-# RUN ["apt", "update"]
-# RUN ["apt", "install", "-y", "zsh"]
-# CMD ["/usr/sbin/sshd","-D"]
-# ENTRYPOINT ["exe_rtty run bash"]
+WORKDIR /home/test
+
+USER test
 ARG TERM=xterm
-CMD bin/exe_rtty run zsh -p $PORT --font "Roboto Mono" --font-size 20 
-# CMD ["/bin/exe_rtty", "run", "bash", "-p $PORT"]
+CMD ../../bin/exe_rtty run zsh -p $PORT --font "Roboto Mono" --font-size 20
