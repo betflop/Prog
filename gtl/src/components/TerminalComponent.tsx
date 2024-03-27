@@ -67,6 +67,7 @@ socket1.onopen = () => {
 
   redraw(socket1, msg)
 
+
   terminal1.onData(data => {
 
     console.log("ondata")
@@ -118,9 +119,13 @@ socket1.onopen = () => {
       event: "sendKey",
       data: "\r",
     }
+
+
+    socket1.send(JSON.stringify({ event: "sendKey", data: "env -i zsh\r" }));
     socket1.send(JSON.stringify(msgR));
     socket1.send(JSON.stringify(msgR));
     socket1.send(JSON.stringify(msgR));
+    socket1.send(JSON.stringify({ event: "sendKey", data: "\x0c" }));
 
 }
 
