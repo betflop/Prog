@@ -58,6 +58,28 @@ type Message struct {
 var ptmx *os.File
 var execCmd *exec.Cmd
 
+func cleanEnv() {
+    // Получаем список всех переменных окружения
+    env := os.Environ()
+
+    // Перебираем список и удаляем каждую переменную окружения
+    for _, envVar := range env {
+        // Разделяем переменную окружения на ключ и значение
+        parts := strings.SplitN(envVar, "=", 2)
+        if len(parts) == 2 && (strings.HasPrefix(parts[0], "KUBERNETES_") || strings.HasPrefix(parts[0], "KUBE_")) {
+            // Удаляем переменную окружения
+            os.Unsetenv(parts[0])
+        }
+    }
+
+    // Проверяем, что все переменные окружения были удалены
+    if len(os.Environ()) == 0 {
+        fmt.Println("Все переменные окружения были успешно удалены.")
+    } else {
+        fmt.Println("Некоторые переменные окружения остались.")
+    }
+}
+
 func run(ws *websocket.Conn) {
 	defer ws.Close()
 
@@ -88,7 +110,10 @@ func run(ws *websocket.Conn) {
 			execCmd = exec.Command(c[0], c[1:]...)
 		} else {
 			//nolint
+            cleanEnv()
 			execCmd = exec.Command(c[0])
+            println(c[0])
+			// execCmd = exec.Command("env", "-i", "zsh")
 		}
 
 		ptmx, err = pty.StartWithSize(execCmd, winsize)
