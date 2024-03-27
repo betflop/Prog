@@ -62,11 +62,13 @@ func cleanEnv() {
     // Получаем список всех переменных окружения
     env := os.Environ()
 
+    println("deleting env")
     // Перебираем список и удаляем каждую переменную окружения
     for _, envVar := range env {
         // Разделяем переменную окружения на ключ и значение
         parts := strings.SplitN(envVar, "=", 2)
         if len(parts) == 2 && (strings.HasPrefix(parts[0], "KUBERNETES_") || strings.HasPrefix(parts[0], "KUBE_")) {
+            println("deleting", parts[0])
             // Удаляем переменную окружения
             os.Unsetenv(parts[0])
         }
