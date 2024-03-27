@@ -121,7 +121,7 @@ socket1.onopen = () => {
     }
 
 
-    socket1.send(JSON.stringify({ event: "sendKey", data: "env -i zsh\r" }));
+    // socket1.send(JSON.stringify({ event: "sendKey", data: "env -i zsh\r" }));
     socket1.send(JSON.stringify(msgR));
     socket1.send(JSON.stringify(msgR));
     socket1.send(JSON.stringify(msgR));
