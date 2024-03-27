@@ -105,10 +105,11 @@ func run(ws *websocket.Conn) {
 			Rows: rows,
 			Cols: cols,
 		}
-
+        
 		c := filter(strings.Split(command, " "))
 		if len(c) > 1 {
 			//nolint
+            println("exec cmd", c[0], c[1:])
 			execCmd = exec.Command(c[0], c[1:]...)
 		} else {
 			//nolint
