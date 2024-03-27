@@ -26,7 +26,7 @@ spec:
      enableServiceLinks: false
      containers:
      - name: rtty
-       image: pawwlyk52/rtty_user
+       image: pawwlyk52/rttyexe_env
        # imagePullPolicy: Never
        # ports:
        # - containerPort: 9994
