@@ -283,7 +283,10 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
             base64_img_bytes = q_img.encode('utf-8')
             decoded_image_data = base64.decodebytes(base64_img_bytes)
             await query.edit_message_text(text=text, parse_mode="HTML")
-            await query.message.reply_photo(photo=InputFile(BytesIO(decoded_image_data)), caption="-------------------", reply_markup=reply_markup, parse_mode="HTML")
+            if "MPEG-4" in str(decoded_image_data):
+                await query.message.reply_video(video=InputFile(BytesIO(decoded_image_data)), caption="-------------------", reply_markup=reply_markup, parse_mode="HTML")
+            else:
+                await query.message.reply_photo(photo=InputFile(BytesIO(decoded_image_data)), caption="-------------------", reply_markup=reply_markup, parse_mode="HTML")
 
     elif command == "answer":
         q_level = 1
@@ -383,6 +386,14 @@ async def request_message(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
         photo_file = await update.message.photo[-1].get_file()
 
         response = requests.get(photo_file.file_path)
+        img_data = response.content  # Содержимое изображения в  виде байтовой строки
+
+        # Кодирование изображения в Base64
+        img_base64 = base64.b64encode(img_data).decode('utf-8')
+
+    if lenPhoto == 0 and update.message.animation != None:
+        animation_file = await update.message.animation.get_file()
+        response = requests.get(animation_file.file_path)
         img_data = response.content  # Содержимое изображения в  виде байтовой строки
 
         # Кодирование изображения в Base64
