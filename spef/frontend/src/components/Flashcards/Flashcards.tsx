@@ -15,6 +15,7 @@ function Flashcards({ tags, tagsUrl, setTags, searchInput }: any) {
     const [question, setQuestion] = useState("");
     const [answer, setAnswer] = useState("");
     const [image, setImage] = useState("");
+    const [video, setVideo] = useState("");
     const [currentCard, setCurrentCard] = useState({});
     const [currentKey, setCurrentKey] = useState(0);
 
@@ -128,9 +129,14 @@ function Flashcards({ tags, tagsUrl, setTags, searchInput }: any) {
         setQuestion(currentCard.question);
         setAnswer(currentCard.answer);
         if (currentCard.img) {
-            setImage("data:image/png;base64," + currentCard.img);
+            if (atob(currentCard.img).includes("MPEG-4")) {
+                setVideo("data:video/mp4;base64," + currentCard.img);
+            } else {
+                setImage("data:image/png;base64," + currentCard.img);
+            }
         } else {
             setImage("");
+            setVideo("");
         }
     }, [currentCard]);
 
@@ -138,7 +144,7 @@ function Flashcards({ tags, tagsUrl, setTags, searchInput }: any) {
         if (question && answer) {
             setShow(true);
         }
-    }, [question, answer, image, currentKey]);
+    }, [question, answer, image, video, currentKey]);
 
     return (
         <>
@@ -180,6 +186,21 @@ function Flashcards({ tags, tagsUrl, setTags, searchInput }: any) {
                                 }}
                             />
                         </div>
+                    </Modal.Body>
+                )}
+                {video && (
+                    <Modal.Body>
+                        <video
+                            style={{
+                                position: "relative",
+                                width: "100%",
+                                height: "100%",
+                            }}
+                            controls
+                            autoPlay
+                        >
+                            <source type="video/mp4" src={video} />
+                        </video>
                     </Modal.Body>
                 )}
                 <Modal.Body>
