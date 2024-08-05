@@ -27,12 +27,13 @@ function JournalForm({ onSubmit, data, onDelete }) {
                 break;
         }
     };
-
+    console.log('it is JournalForm');
     useEffect(() => {
         if (!data) {
             dispatchForm({ type: "CLEAR" });
             dispatchForm({ type: "SET_VALUE", payload: { userId } });
         }
+        console.log('it is JournalForm useEffect');
         dispatchForm({ type: "SET_VALUE", payload: { ...data } });
     }, [data]);
 

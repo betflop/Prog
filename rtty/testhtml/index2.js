@@ -23,7 +23,8 @@ terminal2.open(document.getElementById('terminal2'));
 terminal2.focus();
 fitAddon2.fit();
 
-const socket2 = new WebSocket('ws://0.0.0.0/ws2');
+const socket2 = new WebSocket('ws://127.0.0.1:8880/ws2');
+// const socket2 = new WebSocket('ws://127.0.0.1:8880/ws1');
 
 // workaround
 // for redraw terminal2 screen when reload window
