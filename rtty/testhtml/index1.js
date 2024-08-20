@@ -27,8 +27,8 @@ terminal1.open(document.getElementById('terminal1'));
 terminal1.focus();
 fitAddon1.fit();
 
-const socket1 = new WebSocket('ws://127.0.0.1:8880/ws1');
-// const socket1 = new WebSocket('ws://10.0.0.2:9994/ws');
+// const socket1 = new WebSocket('ws://89.169.146.239.sslip.io/ws1');
+const socket1 = new WebSocket('ws://10.13.13.2:9994/ws1');
 
 // workaround
 // for redraw terminal1 screen when reload window
